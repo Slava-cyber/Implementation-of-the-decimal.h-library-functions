@@ -29,11 +29,11 @@ int get_binary_power(value val);
 int form_float_decimal(s21_decimal *dst, int binaryPower, int tenPower, value val);
 
 int main() {
-float a = 1E24;
+float a = 0.00035063;
 s21_decimal decimal;
 init_decimal(&decimal);
 s21_from_float_to_decimal(a, &decimal);
-for (int i = 95; i >= 0; i--) {
+for (int i = 127; i >= 0; i--) {
     if (check_bit(i, decimal))
     printf("1");
     else 
@@ -78,6 +78,7 @@ int s21_from_float_to_decimal(float src, s21_decimal *dst) {
         val.floatValue = number;
         binaryPower = get_binary_power(val);
         printf("binary:%d\n", binaryPower);
+        printf("ten:%d\n", tenPower);
         form_float_decimal(dst, binaryPower, tenPower, val);
     }
     return result;
@@ -94,7 +95,12 @@ int form_float_decimal(s21_decimal *dst, int binaryPower, int tenPower, value va
         if (val.integerValue & (1 << i))
             set_bit(j, dst);
     }
-    return 1;
+    for (int i = 112; tenPower; i++) {
+        if (tenPower % 2)
+            set_bit(i, dst);
+        tenPower /= 2;
+    }
+return 1;
 }
 
 int s21_from_int_to_decimal(int src, s21_decimal *dst) {
