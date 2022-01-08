@@ -73,6 +73,31 @@ printf("b:%f\n",b);
     return 0;
 }
 
+s21_decimal s21_add(s21_decimal decimalFirst, s21_decimal decimalSecond) {
+    s21_decimal decimalResult;
+    init_decimal(decimalResult);
+
+    return decimalResult;
+}
+
+int simple_add(s21_decimal decimalFirst, s21_decimal decimalSecond, s21_decimal *decimalResult) {
+    int inMind = 0, sum = 0;
+    for (int i = 0; i <= 95; i++){
+        sum = check_bit(i, decimalFirst) + check_bit(decimalSecond) + inMind;
+        inMind = 0;
+        if (sum == 3 || sum == 1)
+            set_bit(i, decimalResult);
+        if (sum >= 2)
+            unMind = 1;
+    }
+    if (inMind) {
+        init_decimal(decimalResult);
+        decimalResult->value_type = s21_INFINITY;
+    }
+    return 1;
+}
+
+
 // перевод из decimal в float
 int s21_from_decimal_to_float(s21_decimal src, float *dst) {
     int codeError = 0;
