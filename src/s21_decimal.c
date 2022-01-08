@@ -97,23 +97,6 @@ int s21_from_decimal_to_float(s21_decimal src, float *dst) {
     return codeError; 
 }
 
-void check_value_number_float(float src, s21_decimal *decimal) {
-  int sign = check_bit_number((unsigned int)src, 31);
-  if (isinf(src) == 1 && sign == 0) {
-    decimal->value_type = s21_INFINITY;
-  } else if (isinf(src) == 1 && sign == 1) {
-    decimal->value_type = s21_NEGATIVE_INFINITY;
-  } else if (isnan(src) == 1) {
-    decimal->value_type = s21_NAN;
-  } else {
-    decimal->value_type = s21_NORMAL_VALUE;
-  }
-}
-
-int check_bit_number(unsigned int number, int position) {
-    return (number & (1 << position));
-}
-
 // перевод float в decimal
 int s21_from_float_to_decimal(float src, s21_decimal *dst) {
     int codeError = 0, tenPower = 0;
@@ -123,16 +106,22 @@ int s21_from_float_to_decimal(float src, s21_decimal *dst) {
     //printf("number:%f\n", number);
     check_value_number_float(number, dst);
     init_decimal(dst);
+    val.floatValue = number;
+    binaryPower = get_binary_power(val);
     if (dst->value_type == s21_NORMAL_VALUE && dst) {
-        printf("number:%f\n", number);
+        //printf("number:%f\n", number);
         if (number != 0.0) {
             for (; !(int)(number / 1E7); number *= 10)
                 tenPower += 1;
-            val.floatValue = number;
-            binaryPower = get_binary_power(val);
-            printf("binary:%d\n", binaryPower);
-            printf("ten:%d\n", tenPower);
-            form_float_decimal(dst, binaryPower, tenPower, val);
+            if (tenPower <= 28 && (binaryPower > -95 && binaryPower <=95)) {
+                val.floatValue = number;
+                binaryPower = get_binary_power(val);
+                //printf("binary:%d\n", binaryPower);
+                //printf("ten:%d\n", tenPower);
+                form_float_decimal(dst, binaryPower, tenPower, val);
+            } else {
+                codeError = 1;
+            }
         }
     } else {
         codeError = 1;
@@ -191,6 +180,11 @@ int s21_from_decimal_to_int(s21_decimal src, int *dst) {
     return codeError;
 }
 
+// возвращаем значение указанного бита в числе
+int check_bit_number(unsigned int number, int position) {
+    return (number & (1 << position));
+} 
+
 // возвращаем значение указанного бита
 int check_bit(int position, s21_decimal dst) {
     int check = 0;
@@ -228,4 +222,18 @@ int get_binary_power(value val) {
     }   
     result -= 127;
     return result;
+}
+
+// проверка на граничные условия float при переводе в decimal
+void check_value_number_float(float src, s21_decimal *decimal) {
+  int sign = check_bit_number((unsigned int)src, 31);
+  if (isinf(src) == 1 && sign == 0) {
+    decimal->value_type = s21_INFINITY;
+  } else if (isinf(src) == 1 && sign == 1) {
+    decimal->value_type = s21_NEGATIVE_INFINITY;
+  } else if (isnan(src) == 1) {
+    decimal->value_type = s21_NAN;
+  } else {
+    decimal->value_type = s21_NORMAL_VALUE;
+  }
 }
