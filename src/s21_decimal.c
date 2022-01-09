@@ -25,6 +25,7 @@ int s21_from_float_to_decimal(float src, s21_decimal *dst);
 int s21_from_decimal_to_float(s21_decimal src, float *dst);
 
 int set_bit(int position, s21_decimal *dst);
+int delete_bit(int position, s21_decimal *dst);
 int init_decimal(s21_decimal *dst);
 int check_bit(int position, s21_decimal dst);
 int get_binary_power(value val);
@@ -32,9 +33,17 @@ int form_float_decimal(s21_decimal *dst, int binaryPower, int tenPower, value va
 void check_value_number_float(float src, s21_decimal *decimal);
 int check_bit_number(unsigned int number, int position);
 
+int simple_add(s21_decimal decimalFirst, s21_decimal decimalSecond, s21_decimal *decimalResult);
+int get_ten_power(s21_decimal decimal);
+int convert_equal_scale(s21_decimal *decimalFirst, s21_decimal *decimalSecond);
+int set_ten_power(int tenPower, s21_decimal *decimal);
+int rewrite_decimal(s21_decimal decimalFirst, s21_decimal *decimalSecond);
+
+
 int main() {
 float b = 0;
-float a = 0.00035063;
+//float a = 0.00035063;
+float a = 1E23;
 printf("a:%f\n", a);
 s21_decimal decimal;
 s21_from_float_to_decimal(a, &decimal);
@@ -72,23 +81,76 @@ printf("b:%f\n",b);
     // printf("%d\n%d\n", start, result);
     return 0;
 }
+// берем scale
+int get_ten_power(s21_decimal decimal) {
+    int tenPower = 0;
+    for (int i = 119; i >= 112; i--)
+        tenPower += check_bit(i, decimal) * pow(2, i - 112);
+    return tenPower;
+}
 
+// устанавливаем scale
+int set_ten_power(int tenPower, s21_decimal *decimal) {
+    for (int i = 112; i <= 119; i++) {
+        delete_bit(i, decimal);
+        if (check_bit_number(tenPower, i - 112))
+            set_bit(i, decimal);
+    }
+    return 1;
+}
+
+// переписываем decimal аналог присвоения
+int rewrite_decimal(s21_decimal decimalFirst, s21_decimal *decimalSecond) {
+    for (int i = 0; i < 128; i++)
+        if (check_bit(i, decimalFirst))
+            set_bit(i, decimalSecond);
+    return 1;
+}
+
+// выравниваем scale / на выходе 2 decimal с одинаковым scale
+int convert_equal_scale(s21_decimal *decimalFirst, s21_decimal *decimalSecond) {
+    s21_decimal decimalSecondBuffer;
+    init_decimal(&decimalSecondBuffer);
+    int scaleFirst = get_ten_power(*decimalFirst);
+    int scaleSecond = get_ten_power(*decimalSecond);
+    if (scaleFirst > scaleSecond && scaleFirst <= 28) {
+        for (int i = scaleSecond; i < scaleFirst; i++) {
+            for (int j = 1; j <= 10; j++) {
+                simple_add(*decimalSecond, *decimalSecond, &decimalSecondBuffer);
+            }
+        }
+        rewrite_decimal(decimalSecondBuffer, decimalSecond);
+        set_ten_power(scaleFirst, decimalSecond);
+    } else if (scaleFirst < scaleSecond && scaleSecond <= 28) {
+        for (int i = scaleFirst; i < scaleSecond; i++) {
+            for (int j = 1; j <= 10; j++) {
+                simple_add(*decimalFirst, *decimalFirst, &decimalSecondBuffer);
+            }
+        }
+        rewrite_decimal(decimalSecondBuffer, decimalFirst);
+        set_ten_power(scaleSecond, decimalFirst);
+    }
+    return 1;
+}
+
+// сложение 2 decimal
 s21_decimal s21_add(s21_decimal decimalFirst, s21_decimal decimalSecond) {
     s21_decimal decimalResult;
-    init_decimal(decimalResult);
+    init_decimal(&decimalResult);
 
     return decimalResult;
 }
 
+// сложение двух decimal с одинаковым scale и одинаковым знаком
 int simple_add(s21_decimal decimalFirst, s21_decimal decimalSecond, s21_decimal *decimalResult) {
     int inMind = 0, sum = 0;
     for (int i = 0; i <= 95; i++){
-        sum = check_bit(i, decimalFirst) + check_bit(decimalSecond) + inMind;
+        sum = check_bit(i, decimalFirst) + check_bit(i, decimalSecond) + inMind;
         inMind = 0;
         if (sum == 3 || sum == 1)
             set_bit(i, decimalResult);
         if (sum >= 2)
-            unMind = 1;
+            inMind = 1;
     }
     if (inMind) {
         init_decimal(decimalResult);
@@ -225,6 +287,14 @@ int set_bit(int position, s21_decimal *dst) {
     int SetBitsArray = position / 32;
     int SetBit = position % 32;
     dst->bits[SetBitsArray] = dst->bits[SetBitsArray] | (1 << SetBit);
+    return 1; 
+}
+
+// зануляем бит
+int delete_bit(int position, s21_decimal *dst) {
+    int SetBitsArray = position / 32;
+    int SetBit = position % 32;
+    dst->bits[SetBitsArray] = dst->bits[SetBitsArray] & (0 << SetBit);
     return 1; 
 }
 
