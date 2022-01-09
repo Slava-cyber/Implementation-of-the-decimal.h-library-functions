@@ -44,18 +44,22 @@ int set_ten_power(int tenPower, s21_decimal *decimal);
 int rewrite_decimal(s21_decimal decimalFirst, s21_decimal *decimalSecond);
 int multiply_ten(s21_decimal decimal, s21_decimal *decimalBuffer);
 
+int check_before_add(s21_decimal first, s21_decimal second, s21_decimal *result);
+int check_before_sub(s21_decimal first, s21_decimal second, s21_decimal *result);
+
 
 int main() {
 float b = 0;
 //float a = 0.00035063;
-float a1 = 123.232;
-float a2 = 234244;
+int d1 = 443;
+float a1 = 10E25;
+float a2 = 12343.2343;
 printf("a:%f\n", a1);
 s21_decimal decimal1, decimal2, decimal3;
 init_decimal(&decimal3);
+//s21_from_int_to_decimal(d1, &decimal1);
 s21_from_float_to_decimal(a1, &decimal1);
 s21_from_float_to_decimal(a2, &decimal2);
-
 //s21_from_decimal_to_float(decimal, &b);
 
 /*convert_equal_scale(&decimal1, &decimal2);
@@ -89,30 +93,41 @@ printf("bas:%f\n", a1 + a2);
 s21_decimal s21_add(s21_decimal decimalFirst, s21_decimal decimalSecond) {
     s21_decimal decimalResult, decimalFirstBuffer, decimalSecondBuffer;
     init_decimal(&decimalResult);
-    //init_decimal(&decimalFirstBuffer);
-    //init_decimal(&decimalSecondBuffer);
-    //decimalFirstBuffer.value_type = s21_NORMAL_VALUE;
-    //decimalSecondBuffer.value_type = s21_NORMAL_VALUE;
-    int scale;
-    int signFirst = check_bit(127, decimalFirst);
-    int signSecond = check_bit(127, decimalSecond);
-    int signEqual = (signFirst + signSecond) % 2;
-    if (!signEqual) {
-        scale = convert_equal_scale(&decimalFirst, &decimalSecond);
-        printf("scale:%d\n", scale);
-        set_ten_power(scale, &decimalResult);
-        simple_add(decimalFirst, decimalSecond, &decimalResult);
-        if (signFirst)
-            set_bit(127, &decimalResult);
-    } else {
-        if (signFirst) {
-
+    init_decimal(&decimalFirstBuffer);
+    init_decimal(&decimalSecondBuffer);
+    rewrite_decimal(decimalFirst, &decimalFirstBuffer);
+    rewrite_decimal(decimalSecond, &decimalSecondBuffer);
+    if (check_before_add(decimalFirst, decimalSecond, &decimalResult)) {
+        int scale;
+        int signFirst = check_bit(127, decimalFirst);
+        int signSecond = check_bit(127, decimalSecond);
+        int signEqual = (signFirst + signSecond) % 2;
+        if (!signEqual) {
+            scale = convert_equal_scale(&decimalFirst, &decimalSecond);
+            if (decimalFirst.value_type == s21_INFINITY) {
+                //printf("1\n");
+                rewrite_decimal(decimalFirstBuffer, &decimalResult);
+                decimalResult.value_type = s21_NORMAL_VALUE;
+            } else if (decimalSecond.value_type == s21_INFINITY) {
+                //printf("2\n");
+                rewrite_decimal(decimalSecondBuffer, &decimalResult);
+                decimalResult.value_type = s21_NORMAL_VALUE;
+            } else {
+                //printf("3\n");
+                printf("scale:%d\n", scale);
+                set_ten_power(scale, &decimalResult);
+                simple_add(decimalFirst, decimalSecond, &decimalResult);
+            }
+            if (signFirst)
+                set_bit(127, &decimalResult);
         } else {
+            if (signFirst) {
 
+            } else {
+
+            }
         }
     }
-    
-    
     return decimalResult;
 }
 
@@ -144,6 +159,7 @@ int rewrite_decimal(s21_decimal decimalFirst, s21_decimal *decimalSecond) {
     return 1;
 }
 
+// повышаем scale на 1 // домнажаем decimal на 10
 int multiply_ten(s21_decimal decimal, s21_decimal *decimalBuffer) {
     for (int i = 1; i < 10; i++)
         simple_add(*decimalBuffer, decimal, decimalBuffer);
@@ -161,52 +177,45 @@ int convert_equal_scale(s21_decimal *decimalFirst, s21_decimal *decimalSecond) {
     printf("scaleFirst:%d\n", scaleFirst);
     printf("scaleSecond:%d\n", scaleSecond);
     if (scaleFirst > scaleSecond && scaleFirst <= 28) {
-                printf("\n");
+            /*    printf("\n");
         for (int i = 127; i >= 0; i--)
             printf("%d", check_bit(i, *decimalSecond));
-        printf("\n");    
+        printf("\n");  */  
 
         rewrite_decimal(*decimalSecond, &decimalSecondBuffer);
         
-                printf("\n");
+        /*        printf("\n");
         for (int i = 127; i >= 0; i--)
             printf("%d", check_bit(i, decimalSecondBuffer));
-        printf("\n");  
-
-
+        printf("\n");  */
         for (int i = scaleSecond; i < scaleFirst; i++) {
-            if (decimalSecondBuffer.value_type == s21_NORMAL_VALUE)
-                multiply_ten(decimalSecondBuffer, &decimalSecondBuffer);
-            //simple_add(decimalSecondBuffer, *decimalSecond, &decimalSecondBuffer);
-        
-                            
-        printf("i:%d\n", i);
+                multiply_ten(decimalSecondBuffer, &decimalSecondBuffer);                        
+        /*printf("i:%d\n", i);
         for (int i = 127; i >= 0; i--)
             printf("%d", check_bit(i, decimalSecondBuffer));
-        printf("\n");  
+        printf("\n");  */
         }
+        if (decimalSecondBuffer.value_type == s21_INFINITY)
+                 decimalSecond->value_type = s21_INFINITY;
         
-                printf("\n");
+        /*        printf("\n");
         for (int i = 127; i >= 0; i--)
             printf("%d", check_bit(i, decimalSecondBuffer));
-        printf("\n");  
-
+        printf("\n");  */
         rewrite_decimal(decimalSecondBuffer, decimalSecond);
         set_ten_power(scaleFirst, decimalSecond);
         scale = scaleFirst;
-
-         printf("\n");
+        /*printf("\n");
         for (int i = 127; i >= 0; i--)
             printf("%d", check_bit(i, *decimalSecond));
-        printf("\n");    
-
+        printf("\n");    */
     } else if (scaleFirst < scaleSecond && scaleSecond <= 28) {
         rewrite_decimal(*decimalFirst, &decimalSecondBuffer);
-        
-        for (int i = scaleFirst; i < scaleSecond; i++) {
-            if (decimalSecondBuffer.value_type == s21_NORMAL_VALUE)
+        for (int i = scaleFirst; i < scaleSecond; i++)
                 multiply_ten(decimalSecondBuffer, &decimalSecondBuffer);
-        }
+        if (decimalSecondBuffer.value_type == s21_INFINITY)
+                 decimalFirst->value_type = s21_INFINITY;
+
         rewrite_decimal(decimalSecondBuffer, decimalFirst);
         set_ten_power(scaleSecond, decimalFirst);
         scale = scaleSecond;
@@ -234,29 +243,6 @@ int simple_add(s21_decimal decimalFirst, s21_decimal decimalSecond, s21_decimal 
     }
     return 1;
 }
-
-/*sint addSpecialCaseHandler(s21_decimal arg1, s21_decimal arg2,
-                          s21_decimal *result) {
-  int done = FALSE;
-  if ((arg1.value_type == S21_NAN || arg2.value_type == S21_NAN) ||
-      (arg1.value_type == S21_INFINITY &&
-       arg2.value_type == S21_NEGATIVE_INFINITY) ||
-      (arg1.value_type == S21_NEGATIVE_INFINITY &&
-       arg2.value_type == S21_INFINITY)) {
-    result->value_type = S21_NAN;
-    done = TRUE;
-  } else if (arg1.value_type == S21_INFINITY ||
-             arg2.value_type == S21_INFINITY) {
-    result->value_type = S21_INFINITY;
-    done = TRUE;
-  } else if (arg1.value_type == S21_NEGATIVE_INFINITY ||
-             arg2.value_type == S21_NEGATIVE_INFINITY) {
-    result->value_type = S21_NEGATIVE_INFINITY;
-    done = TRUE;
-  }
-  return done;
-}*/
-
 
 // перевод из decimal в float
 int s21_from_decimal_to_float(s21_decimal src, float *dst) {
@@ -429,4 +415,54 @@ void check_value_number_float(float src, s21_decimal *decimal) {
   } else {
     decimal->value_type = s21_NORMAL_VALUE;
   }
+}
+
+// проверка на граничные условия перед вычитанием
+int check_before_sub(s21_decimal first, s21_decimal second, s21_decimal *result) {
+    int done = 1;
+    if ((first.value_type == s21_NAN || second.value_type == s21_NAN)) {
+        result->value_type = s21_NAN;
+        done = 0;
+    } else if (first.value_type != s21_NORMAL_VALUE &&
+               second.value_type != s21_NORMAL_VALUE) {
+        if (first.value_type == second.value_type) {
+            result->value_type = s21_NAN;
+        } else {
+            result->value_type = first.value_type;
+        }
+        done = 0;
+    } else if (first.value_type == s21_NORMAL_VALUE &&
+               second.value_type != s21_NORMAL_VALUE) {
+        result->value_type = second.value_type == s21_NEGATIVE_INFINITY
+                             ? s21_INFINITY
+                             : s21_NEGATIVE_INFINITY;
+        done = 0;
+    } else if (first.value_type != s21_NORMAL_VALUE &&
+               second.value_type == s21_NORMAL_VALUE) {
+        result->value_type = first.value_type;
+        done = 0;
+    }
+    return done;
+}
+
+// проверка на граничные условия перед сложением
+int check_before_add(s21_decimal first, s21_decimal second, s21_decimal *result) {
+    int done = 1;
+    if ((first.value_type == s21_NAN || second.value_type == s21_NAN) ||
+        (first.value_type == s21_INFINITY &&
+         second.value_type == s21_NEGATIVE_INFINITY) ||
+        (first.value_type == s21_NEGATIVE_INFINITY &&
+         second.value_type == s21_INFINITY)) {
+        result->value_type = s21_NAN;
+        done = 0;
+    } else if (first.value_type == s21_INFINITY ||
+               second.value_type == s21_INFINITY) {
+        result->value_type = s21_INFINITY;
+        done = 0;
+    } else if (first.value_type == s21_NEGATIVE_INFINITY ||
+               second.value_type == s21_NEGATIVE_INFINITY) {
+        result->value_type = s21_NEGATIVE_INFINITY;
+        done = 0;
+    }
+    return done;
 }
