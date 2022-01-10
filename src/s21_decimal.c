@@ -48,6 +48,7 @@ int rewrite_decimal(s21_decimal decimalFirst, s21_decimal *decimalSecond);
 int multiply_ten(s21_decimal decimal, s21_decimal *decimalBuffer);
 int additional_code(s21_decimal *decimal);
 int subtraction(s21_decimal decimalFirst, s21_decimal decimalSecond, s21_decimal *decimalResult);
+int substraction_part(s21_decimal decimalFirst, s21_decimal decimalSecond, s21_decimal *decimalResult);
 
 // операции над decimal проверка граничных условий
 int check_before_add(s21_decimal first, s21_decimal second, s21_decimal *result);
@@ -70,7 +71,7 @@ int main() {
     float b = 0;
     //float a = 0.00035063;
     int d1 = 443;
-    float a1 = -12;
+    float a1 = -45;
     float a2 = 12;
     printf("a:%f\n", a1);
     s21_decimal decimal1, decimal2, decimal3;
@@ -79,7 +80,7 @@ int main() {
     s21_from_float_to_decimal(a1, &decimal1);
     s21_from_float_to_decimal(a2, &decimal2);
     
-    decimal3 = s21_add(decimal1, decimal2);
+    decimal3 = s21_sub(decimal1, decimal2);
 
     //additional_code(&decimal3);
 
@@ -92,7 +93,7 @@ int main() {
 
     s21_from_decimal_to_float(decimal3, &b);
     printf("b:%f\n",b);
-    printf("bas:%f\n", a1 + a2);
+    printf("bas:%f\n", a1 - a2);
     return 0;
 }
 
@@ -121,18 +122,11 @@ int subtraction(s21_decimal decimalFirst, s21_decimal decimalSecond, s21_decimal
     for (int i = 127; i >= 0; i--)
     printf("%d", check_bit(i, *decimalResult));
     printf("\n");  
-    /*if (!s21_is_greater(*decimalResult, decimalFirst) && !s21_is_greater(*decimalResult, decimalSecond)) {
-        for (int i = 95; i >=0; i--) {
-            if (check_bit(i, *decimalResult)) {
-                delete_bit(i, decimalResult);
-                break;
-            }
-        }
-    }*/
     decimalResult->value_type = s21_NORMAL_VALUE;
     return 1;
 }
 
+// оператор - 
 s21_decimal s21_sub(s21_decimal decimalFirst, s21_decimal decimalSecond) {
     s21_decimal decimalResult;
     init_decimal(&decimalResult);
@@ -147,24 +141,29 @@ s21_decimal s21_sub(s21_decimal decimalFirst, s21_decimal decimalSecond) {
 // перевод в доп код
 int additional_code(s21_decimal *decimal) {
     s21_decimal decimalBuffer;
-    /*int startNumber = 0;
-    for (int i = 95; i >= 0; i--) {
-        if (startNumber) {
-            if (check_bit(i, *decimal))
-                delete_bit(i, decimal);
-            else
-                set_bit(i, decimal);
-        } else if (check_bit(i, *decimal)) {
-            startNumber = 1;
-            delete_bit(i, decimal);
-        }
-    }*/
     for (int i = 0; i < 3; i++)
         decimal->bits[i] = ~decimal->bits[i];
     s21_from_int_to_decimal(1, &decimalBuffer);
     simple_add(*decimal, decimalBuffer, decimal);
     return 1;
 }
+
+int substraction_part(s21_decimal decimalFirst, s21_decimal decimalSecond, s21_decimal *decimalResult) {
+    delete_bit(127, &decimalFirst);
+    int scale = convert_equal_scale(&decimalFirst, &decimalSecond);
+    if (!s21_is_less(decimalFirst, decimalSecond)) {
+        printf("q\n");
+        subtraction(decimalSecond, decimalFirst, decimalResult);
+    } else if (!s21_is_not_equal(decimalFirst, decimalSecond)) {
+        printf("q1\n");
+        subtraction(decimalFirst, decimalSecond, decimalResult);
+        set_bit(127, decimalResult);
+    } else {
+        init_decimal(decimalResult);
+    }
+    set_ten_power(scale, decimalResult);
+}
+
 
 // сложение 2 decimal
 s21_decimal s21_add(s21_decimal decimalFirst, s21_decimal decimalSecond) {
@@ -202,7 +201,8 @@ s21_decimal s21_add(s21_decimal decimalFirst, s21_decimal decimalSecond) {
         } else {
             if (signFirst) {
                 printf("4\n");
-                delete_bit(127, &decimalFirst);
+                substraction_part(decimalFirst,decimalSecond, &decimalResult);
+                /*delete_bit(127, &decimalFirst);
                 scale = convert_equal_scale(&decimalFirst, &decimalSecond);
                 if (!s21_is_less(decimalFirst, decimalSecond)) {
                     printf("q\n");
@@ -214,8 +214,9 @@ s21_decimal s21_add(s21_decimal decimalFirst, s21_decimal decimalSecond) {
                 } else {
                     init_decimal(&decimalResult);
                 }
-                set_ten_power(scale, &decimalResult);
+                set_ten_power(scale, &decimalResult);*/
             } else {
+                substraction_part(decimalSecond, decimalFirst, &decimalResult);
                 //substraction(decimalFirst, decimalSecond, &decimalResult);
             }
         }
