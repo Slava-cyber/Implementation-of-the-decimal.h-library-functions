@@ -73,9 +73,8 @@ int main() {
     float b = 0;
     //float a = 0.00035063;
     int d1 = 443;
-    float a1 = 123;
-    float a2 = 12E-26;
-    printf("a:%f\n", a1);
+    float a1 = 10;
+    float a2 = 12;
     s21_decimal decimal1, decimal2, decimal3;
     init_decimal(&decimal3);
     //s21_from_int_to_decimal(d1, &decimal1);
@@ -98,7 +97,6 @@ int main() {
     printf("bas:%f\n", a1 * a2);
     return 0;
 }
-
 
 // int add_array(int *first, int *second) {
 //     int inMind = 0, sum = 0;
@@ -125,14 +123,27 @@ int multiply(s21_decimal decimalFirst, s21_decimal decimalSecond, s21_decimal *d
     int inf = 0;
     s21_decimal decimalBuffer;
     rewrite_decimal(decimalFirst, &decimalBuffer);
-    for (int i = 0; i <= 95; i++) {
+    int position;
+    for (position = 95; position >= 0; position--)
+        if (check_bit(position, decimalSecond))  
+            break;
+
+    for (int i = 0; i <= position; i++) {
         if (check_bit(i, decimalSecond))
             inf += simple_add(*decimalResult, decimalBuffer, decimalResult);
         if (i != 95)
             inf += simple_add(decimalBuffer, decimalBuffer, &decimalBuffer);
+        
+    // printf("buffer\n");
+    // for (int i = 127; i >= 0; i--)
+    // printf("%d", check_bit(i, decimalBuffer));
+    // printf("\n"); 
+
     }
-    if (inf)
+    if (inf) {
         decimalResult->value_type = s21_INFINITY;
+        printf("INF!!!\n");
+    }
     return inf;
 }
 
@@ -145,7 +156,11 @@ s21_decimal s21_mul(s21_decimal decimalFirst, s21_decimal decimalSecond) {
     int scaleSecond = get_ten_power(decimalSecond);
     int scale = scaleFirst + scaleSecond;
     int inf = multiply(decimalFirst, decimalSecond, &decimalResult);
+    printf("scale:%d\n", scale);
+    printf("inf:%d\n", inf);
+    
     if (decimalResult.value_type != s21_INFINITY && scale <= 28) {
+        printf("tuta\n");
         set_ten_power(scale, &decimalResult);
         if (sign)
             set_bit(127, &decimalResult);
@@ -158,10 +173,13 @@ s21_decimal s21_mul(s21_decimal decimalFirst, s21_decimal decimalSecond) {
         // снова пытаемся умножить
     } else if (decimalResult.value_type == s21_INFINITY && scale == 0) {
         init_decimal(&decimalResult);
-        if (sign)
+        if (sign) {
             decimalResult.value_type == s21_NEGATIVE_INFINITY;
-        else 
+            printf("-inf\n");
+        } else {
             decimalResult.value_type == s21_INFINITY;   
+            printf("inf\n");
+        }
     }
     return decimalResult;
 }
