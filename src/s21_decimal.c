@@ -77,12 +77,18 @@ int compare_board_condition(s21_decimal decimalFirst, s21_decimal decimalSecond)
 int compare_decimal(s21_decimal decimalFirst, s21_decimal decimalSecond);
 
 
+    // другие функции
+s21_decimal s21_negate(s21_decimal decimal);
+s21_decimal s21_truncate(s21_decimal decimal);
+s21_decimal s21_floor(s21_decimal decimal);
+s21_decimal s21_round(s21_decimal decimal);
+
 int main() {
     float b = 0;
     //float a = 0.00035063;
     int d1 = 443;
-    float a1 = -2.647;
-    float a2 = 10000000;
+    float a1 = 2.5;
+    float a2 = 14.49999;
     s21_decimal decimal1, decimal2, decimal3;
     init_decimal(&decimal3);
     s21_from_float_to_decimal(a1, &decimal1);
@@ -95,15 +101,12 @@ int main() {
 
 
     //printf("less:%d\n", s21_is_greater_or_equal(decimal2, decimal1));
-
-    s21_from_decimal_to_float(decimal3, &b);
+    decimal2 = s21_round(decimal2);
+    s21_from_decimal_to_float(decimal2, &b);
     printf("b:%f\n",b);
     printf("bas:%f\n", a2 / a1);
     return 0;
 }
-
-
-
 // деление целочисленное
 s21_decimal divide_int(s21_decimal decimalFirst, s21_decimal decimalSecond, s21_decimal *decimalResult) {
     s21_decimal decimalBuffer;
@@ -132,6 +135,7 @@ s21_decimal divide_int(s21_decimal decimalFirst, s21_decimal decimalSecond, s21_
 s21_decimal s21_div(s21_decimal decimalFirst, s21_decimal decimalSecond) {
     s21_decimal decimalResult;
     init_decimal(&decimalResult);
+    decimalResult.value_type = s21_NORMAL_VALUE;
     int sign = (check_bit(127, decimalFirst) + check_bit(127, decimalSecond)) % 2;
     if (check_before_div(decimalFirst, decimalSecond, &decimalResult)) {
         delete_bit(127, &decimalSecond);
@@ -249,6 +253,7 @@ int subtraction(s21_decimal decimalFirst, s21_decimal decimalSecond, s21_decimal
 s21_decimal s21_sub(s21_decimal decimalFirst, s21_decimal decimalSecond) {
     s21_decimal decimalResult;
     init_decimal(&decimalResult);
+    decimalResult.value_type = s21_NORMAL_VALUE;
     if (check_bit(127, decimalSecond))
         delete_bit(127, &decimalSecond);
     else 
@@ -285,6 +290,7 @@ int substraction_part(s21_decimal decimalFirst, s21_decimal decimalSecond, s21_d
 s21_decimal s21_add(s21_decimal decimalFirst, s21_decimal decimalSecond) {
     s21_decimal decimalResult, decimalFirstBuffer, decimalSecondBuffer;
     init_decimal(&decimalResult);
+    decimalResult.value_type = s21_NORMAL_VALUE;
     init_decimal(&decimalFirstBuffer);
     init_decimal(&decimalSecondBuffer);
     rewrite_decimal(decimalFirst, &decimalFirstBuffer);
@@ -910,4 +916,91 @@ int s21_is_greater_or_equal(s21_decimal decimalFirst, s21_decimal decimalSecond)
     if (!s21_is_equal(decimalFirst, decimalSecond))
         result = 0;
     return result;
+}
+// функция negate 
+s21_decimal s21_negate(s21_decimal decimal) {
+    s21_decimal decimalResult;
+    int sign = check_bit(127, decimal);
+    init_decimal(&decimalResult);
+    decimalResult.value_type = s21_NORMAL_VALUE;
+    if (decimal.value_type == s21_NAN) {
+        decimalResult.value_type = s21_NAN;
+    } else if (decimal.value_type != s21_NORMAL_VALUE) {
+        if (decimal.value_type == s21_INFINITY)
+            decimalResult.value_type = s21_NEGATIVE_INFINITY;
+        else 
+            decimalResult.value_type = s21_INFINITY;
+    } else {
+        decimalResult = decimal;
+        delete_bit(127, &decimalResult);
+        if (!sign)
+            set_bit(127, &decimalResult);
+    }
+    return decimalResult;
+}
+// функция truncate
+s21_decimal s21_truncate(s21_decimal decimal) {
+    s21_decimal decimalResult, decimalOne;
+    init_decimal(&decimalResult);
+    init_decimal(&decimalOne);
+    decimalResult.value_type = s21_NORMAL_VALUE;
+    decimalOne.value_type = s21_NORMAL_VALUE;
+    if (decimal.value_type != s21_NORMAL_VALUE) {
+        decimalResult.value_type = decimal.value_type;
+    } else {
+        s21_from_float_to_decimal(1.0, &decimalOne);
+        convert_equal_scale(&decimal, &decimalOne);
+        int scale = get_ten_power(decimal);
+        divide_int(decimal, decimalOne, &decimalResult);
+        if (check_bit(127, decimal))
+            set_bit(127, &decimalResult);
+    }
+    return decimalResult;
+}
+// функция floor
+s21_decimal s21_floor(s21_decimal decimal) {
+    s21_decimal decimalResult, decimalOne;
+    init_decimal(&decimalResult);
+    init_decimal(&decimalOne);
+    decimalResult.value_type = s21_NORMAL_VALUE;
+    decimalOne.value_type = s21_NORMAL_VALUE;
+    if (decimal.value_type != s21_NORMAL_VALUE) {
+        decimalResult.value_type = decimal.value_type;
+    } else {
+        s21_from_int_to_decimal(1, &decimalOne);
+        decimalResult = s21_truncate(decimal);
+        if (check_bit(127, decimalResult) && !s21_is_not_equal(decimalResult, decimal))
+                decimalResult = s21_sub(decimalResult, decimalOne);
+    }
+    return decimalResult;
+}
+// функция round
+s21_decimal s21_round(s21_decimal decimal) {
+    s21_decimal decimalResult, decimalHalf, decimalBuffer, decimalOne;
+    init_decimal(&decimalResult);
+    init_decimal(&decimalHalf);
+    init_decimal(&decimalBuffer);
+    init_decimal(&decimalOne);
+    decimalResult.value_type = s21_NORMAL_VALUE;
+    decimalOne.value_type = s21_NORMAL_VALUE;
+    decimalHalf.value_type = s21_NORMAL_VALUE;
+    decimalBuffer.value_type = s21_NORMAL_VALUE;
+    float f;
+    if (decimal.value_type != s21_NORMAL_VALUE) {
+        decimalResult.value_type = decimal.value_type;
+    } else {
+        s21_from_float_to_decimal(0.5, &decimalHalf);
+        s21_from_int_to_decimal(1, &decimalOne);
+        decimalResult = s21_truncate(decimal);
+        if (check_bit(127, decimalResult)) {
+            decimalBuffer = s21_sub(decimalResult, decimalHalf);
+            if (!s21_is_less_or_equal(decimal, decimalBuffer))
+                decimalResult = s21_sub(decimalResult, decimalOne);
+        } else {
+            decimalBuffer = s21_add(decimalResult, decimalHalf);
+            if (!s21_is_greater_or_equal(decimal, decimalBuffer))
+                decimalResult = s21_add(decimalResult, decimalOne);
+        }
+    }
+    return decimalResult;
 }
