@@ -81,8 +81,8 @@ int main() {
     float b = 0;
     //float a = 0.00035063;
     int d1 = 443;
-    float a1 = -2;
-    float a2 = 146;
+    float a1 = -2.647;
+    float a2 = 10000000;
     s21_decimal decimal1, decimal2, decimal3;
     init_decimal(&decimal3);
     s21_from_float_to_decimal(a1, &decimal1);
@@ -175,16 +175,6 @@ int multiply(s21_decimal decimalFirst, s21_decimal decimalSecond, s21_decimal *d
             inf += simple_add(*decimalResult, decimalBuffer, decimalResult);
         if (i != 95)
             inf += simple_add(decimalBuffer, decimalBuffer, &decimalBuffer);
-        
-    // printf("buffer\n");
-    // for (int i = 127; i >= 0; i--)
-    // printf("%d", check_bit(i, decimalBuffer));
-    // printf("\n"); 
-
-    }
-    if (inf) {
-        decimalResult->value_type = s21_INFINITY;
-        printf("INF!!!\n");
     }
     return inf;
 }
