@@ -107,6 +107,7 @@ int main() {
     printf("bas:%f\n", a2 / a1);
     return 0;
 }
+
 // деление целочисленное
 s21_decimal divide_int(s21_decimal decimalFirst, s21_decimal decimalSecond, s21_decimal *decimalResult) {
     s21_decimal decimalBuffer;
