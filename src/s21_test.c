@@ -7,21 +7,18 @@
 
 
 START_TEST(s21_decimal_test_1) {
-int numbers[] = {
-    0,1,2,
-    1, 1, 2,
-    9, 1, 10,
-    99, 1, 100,
-    19, 1, 20,
-    91, 3, 94,
-    0, 0, 0,
-    101, 9, 110,
-    101, 909, 1010,
-    24610, 33081, 57691,    
-};
-int value1 = numbers[1];
-int value2 = numbers[3];
-ck_assert_int_eq(value1, value2);
+
+
+ s21_decimal dec_y;
+s21_from_int_to_decimal(235325258,&dec_y);
+
+for(int i = 0;i < 128;i++) {
+    if (i % 32 == 0) {
+            printf("\n");
+    }
+    printf("%d ",check_bit(i,dec_y));
+}
+printf("\n");
 }
 END_TEST
 
