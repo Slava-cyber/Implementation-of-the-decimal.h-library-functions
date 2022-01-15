@@ -332,8 +332,8 @@ int s21_from_float_to_decimal(float src, s21_decimal *dst) {
     if (dst->value_type == s21_NORMAL_VALUE && dst) {
         // printf("number:%f\n", number);
         if (number != 0.0) {
+            int tenPower = 0;
             for (; !(int)(number / 1E7); number *= 10)
-                int tenPower = 0;
                 tenPower += 1;
             if (tenPower <= 28 && (binaryPower > -95 && binaryPower <=95)) {
                 val.floatValue = number;
