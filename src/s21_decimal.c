@@ -5,7 +5,7 @@ s21_decimal divide_int(s21_decimal decimalFirst, s21_decimal decimalSecond, s21_
     s21_decimal decimalBuffer;
     init_decimal(&decimalBuffer);
     decimalBuffer.value_type = s21_NORMAL_VALUE;
-    set_ten_power(get_ten_power(decimalFirst), &decimalBuffer);    
+    set_ten_power(get_ten_power(decimalFirst), &decimalBuffer);
     for (int i = 95; i >= 0; i--) {
         shift(&decimalBuffer, 1);
         if (check_bit(i, decimalFirst)) {
@@ -13,7 +13,7 @@ s21_decimal divide_int(s21_decimal decimalFirst, s21_decimal decimalSecond, s21_
         }
         if (!s21_is_greater_or_equal(decimalBuffer, decimalSecond)) {
             decimalBuffer = s21_sub(decimalBuffer, decimalSecond);
-            //set_ten_power(scale, &decimalBuffer);
+            // set_ten_power(scale, &decimalBuffer);
             shift(decimalResult, 1);
             set_bit(0, decimalResult);
         } else {
@@ -64,7 +64,7 @@ int multiply(s21_decimal decimalFirst, s21_decimal decimalSecond, s21_decimal *d
     rewrite_decimal(decimalFirst, &decimalBuffer);
     int position;
     for (position = 95; position >= 0; position--)
-        if (check_bit(position, decimalSecond))  
+        if (check_bit(position, decimalSecond))
             break;
 
     for (int i = 0; i <= position; i++) {
@@ -86,7 +86,7 @@ s21_decimal s21_mul(s21_decimal decimalFirst, s21_decimal decimalSecond) {
     int inf = multiply(decimalFirst, decimalSecond, &decimalResult);
     printf("scale:%d\n", scale);
     printf("inf:%d\n", inf);
-    
+
     if (check_before_mul(decimalFirst, decimalSecond, &decimalResult)) {
         if (decimalResult.value_type != s21_INFINITY && scale <= 28) {
             printf("tuta\n");
@@ -106,7 +106,7 @@ s21_decimal s21_mul(s21_decimal decimalFirst, s21_decimal decimalSecond) {
                 // .i. decimalResult.value_type == s21_NEGATIVE_INFINITY;
                 printf("-inf\n");
             } else {
-                // .i. decimalResult.value_type == s21_INFINITY;   
+                // .i. decimalResult.value_type == s21_INFINITY;
                 printf("inf\n");
             }
         }
@@ -115,7 +115,6 @@ s21_decimal s21_mul(s21_decimal decimalFirst, s21_decimal decimalSecond) {
 }
 // вычитание через доп код
 int subtraction(s21_decimal decimalFirst, s21_decimal decimalSecond, s21_decimal *decimalResult) {
-    
     additional_code(&decimalSecond);
 
 
@@ -123,14 +122,14 @@ int subtraction(s21_decimal decimalFirst, s21_decimal decimalSecond, s21_decimal
     decimalResult->value_type = s21_NORMAL_VALUE;
     return 1;
 }
-// оператор - 
+// оператор -
 s21_decimal s21_sub(s21_decimal decimalFirst, s21_decimal decimalSecond) {
     s21_decimal decimalResult;
     init_decimal(&decimalResult);
     decimalResult.value_type = s21_NORMAL_VALUE;
     if (check_bit(127, decimalSecond))
         delete_bit(127, &decimalSecond);
-    else 
+    else
         set_bit(127, &decimalSecond);
     decimalResult = s21_add(decimalFirst, decimalSecond);
     return decimalResult;
@@ -149,10 +148,8 @@ int substraction_part(s21_decimal decimalFirst, s21_decimal decimalSecond, s21_d
     delete_bit(127, &decimalFirst);
     int scale = convert_equal_scale(&decimalFirst, &decimalSecond);
     if (!s21_is_less(decimalFirst, decimalSecond)) {
-        //printf("q\n");
         subtraction(decimalSecond, decimalFirst, decimalResult);
     } else if (!s21_is_not_equal(decimalFirst, decimalSecond)) {
-        //printf("q1\n");
         subtraction(decimalFirst, decimalSecond, decimalResult);
         set_bit(127, decimalResult);
     } else {
@@ -171,12 +168,11 @@ s21_decimal s21_add(s21_decimal decimalFirst, s21_decimal decimalSecond) {
     rewrite_decimal(decimalFirst, &decimalFirstBuffer);
     rewrite_decimal(decimalSecond, &decimalSecondBuffer);
     if (check_before_add(decimalFirst, decimalSecond, &decimalResult)) {
-        int scale, inf;
         int signFirst = check_bit(127, decimalFirst);
         int signSecond = check_bit(127, decimalSecond);
         int signEqual = (signFirst + signSecond) % 2;
         if (!signEqual) {
-            scale = convert_equal_scale(&decimalFirst, &decimalSecond);
+            int scale = convert_equal_scale(&decimalFirst, &decimalSecond);
             if (decimalFirst.value_type == s21_INFINITY) {
                 printf("1\n");
                 rewrite_decimal(decimalFirstBuffer, &decimalResult);
@@ -189,7 +185,7 @@ s21_decimal s21_add(s21_decimal decimalFirst, s21_decimal decimalSecond) {
                 printf("3\n");
                 printf("scale:%d\n", scale);
                 set_ten_power(scale, &decimalResult);
-                inf = simple_add(decimalFirst, decimalSecond, &decimalResult);
+                int inf = simple_add(decimalFirst, decimalSecond, &decimalResult);
                 if (inf) {
                     if (signFirst)
                         decimalResult.value_type = s21_NEGATIVE_INFINITY;
@@ -255,13 +251,10 @@ int convert_equal_scale(s21_decimal *decimalFirst, s21_decimal *decimalSecond) {
     printf("scaleFirst:%d\n", scaleFirst);
     printf("scaleSecond:%d\n", scaleSecond);
     if (scaleFirst > scaleSecond && scaleFirst <= 28) {
-     
-
         rewrite_decimal(*decimalSecond, &decimalSecondBuffer);
-  
+
         for (int i = scaleSecond; i < scaleFirst; i++) {
-                inf = multiply_ten(decimalSecondBuffer, &decimalSecondBuffer);                        
-   
+            inf = multiply_ten(decimalSecondBuffer, &decimalSecondBuffer);
         }
         if (inf)
             decimalSecond->value_type = s21_INFINITY;
@@ -285,13 +278,13 @@ int convert_equal_scale(s21_decimal *decimalFirst, s21_decimal *decimalSecond) {
 }
 // сложение двух decimal с одинаковым scale и одинаковым знаком
 int simple_add(s21_decimal decimalFirst, s21_decimal decimalSecond, s21_decimal *decimalResult) {
-    int inMind = 0, sum = 0;
+    int inMind = 0;
     for (int i = 0; i <= 95; i++) {
-        sum = check_bit(i, decimalFirst) + check_bit(i, decimalSecond) + inMind;
+        int sum = check_bit(i, decimalFirst) + check_bit(i, decimalSecond) + inMind;
         inMind = 0;
         if (sum == 3 || sum == 1)
             set_bit(i, decimalResult);
-        else 
+        else
             delete_bit(i, decimalResult);
         if (sum >= 2)
             inMind = 1;
@@ -312,40 +305,41 @@ int s21_from_decimal_to_float(s21_decimal src, float *dst) {
             number += check_bit(i, src) * pow(2, i);
         for (int i = 119; i >= 112; i--)
             tenPower += check_bit(i, src) * pow(2, i - 112);
-        //printf("number1:%f\n", number);
+        // printf("number1:%f\n", number);
         for (int i = tenPower; i > 0; i--)
             number = number / 10.0;
-        //printf("number2:%f\n", number);
+        // printf("number2:%f\n", number);
         if (check_bit(127, src))
             number *= -1;
-    
+
         *dst = (float)number;
     } else {
         codeError = 1;
     }
-    return codeError; 
+    return codeError;
 }
 // перевод float в decimal
 int s21_from_float_to_decimal(float src, s21_decimal *dst) {
-    int codeError = 0, tenPower = 0;
+    int codeError = 0;
     value val;
     int binaryPower;
     double number = (double) src;
-    //printf("number:%f\n", number);
+    // printf("number:%f\n", number);
     check_value_number_float(number, dst);
     init_decimal(dst);
     val.floatValue = number;
     binaryPower = get_binary_power(val);
     if (dst->value_type == s21_NORMAL_VALUE && dst) {
-        //printf("number:%f\n", number);
+        // printf("number:%f\n", number);
         if (number != 0.0) {
             for (; !(int)(number / 1E7); number *= 10)
+                int tenPower = 0;
                 tenPower += 1;
             if (tenPower <= 28 && (binaryPower > -95 && binaryPower <=95)) {
                 val.floatValue = number;
                 binaryPower = get_binary_power(val);
-                //printf("binary:%d\n", binaryPower);
-                //printf("ten:%d\n", tenPower);
+                // printf("binary:%d\n", binaryPower);
+                // printf("ten:%d\n", tenPower);
                 form_float_decimal(dst, binaryPower, tenPower, val);
             } else {
                 codeError = 1;
@@ -398,7 +392,7 @@ int s21_from_decimal_to_int(s21_decimal src, int *dst) {
             *dst += pow(2, i) * check_bit(i, src);
         }
         if (check_bit(127, src))
-            *dst = *dst * (-1); 
+            *dst = *dst * (-1);
     } else {
         codeError = 1;
     }
@@ -407,7 +401,7 @@ int s21_from_decimal_to_int(s21_decimal src, int *dst) {
 // возвращаем значение указанного бита в числе
 int check_bit_number(unsigned int number, int position) {
     return (number & (1 << position));
-} 
+}
 // возвращаем значение указанного бита
 int check_bit(int position, s21_decimal dst) {
     int check = 0;
@@ -422,14 +416,14 @@ int set_bit(int position, s21_decimal *dst) {
     int SetBitsArray = position / 32;
     int SetBit = position % 32;
     dst->bits[SetBitsArray] = dst->bits[SetBitsArray] | (1 << SetBit);
-    return 1; 
+    return 1;
 }
 // зануляем бит
 int delete_bit(int position, s21_decimal *dst) {
     int SetBitsArray = position / 32;
     int SetBit = position % 32;
     dst->bits[SetBitsArray] = dst->bits[SetBitsArray] & ~(1 << SetBit);
-    return 1; 
+    return 1;
 }
 // инициализация decimal
 int init_decimal(s21_decimal *dst) {
@@ -439,14 +433,14 @@ int init_decimal(s21_decimal *dst) {
 }
 // берем двоичную степень числа
 int get_binary_power(value val) {
-    int result = 0, mult = 0;
-    for (int i = 30; i > 22; i--){
+    int result = 0, mult;
+    for (int i = 30; i > 22; i--) {
         if ((val.integerValue & (1 << i)) == 0)
             mult = 0;
-        else 
+        else
             mult = 1;
         result += mult * pow(2, i - 23);
-    }   
+    }
     result -= 127;
     return result;
 }
@@ -460,7 +454,7 @@ int first_number_position(s21_decimal decimal) {
     }
     return i;
 }
-// сдвиг децимал основной части step > 0 - влево, step < 0 - вправо 
+// сдвиг децимал основной части step > 0 - влево, step < 0 - вправо
 int shift(s21_decimal *decimal, int step) {
     if (step > 0) {
         for (int i = 0; i < step; i++) {
@@ -469,7 +463,7 @@ int shift(s21_decimal *decimal, int step) {
             decimal->bits[0] <<= 1;
             decimal->bits[1] <<= 1;
             decimal->bits[2] <<= 1;
-            if (zero) 
+            if (zero)
                 set_bit(32, decimal);
             if (one)
                 set_bit(64, decimal);
@@ -481,7 +475,7 @@ int shift(s21_decimal *decimal, int step) {
             decimal->bits[0] >>= 1;
             decimal->bits[1] >>= 1;
             decimal->bits[2] >>= 1;
-            if (zero) 
+            if (zero)
                 set_bit(31, decimal);
             if (one)
                 set_bit(63, decimal);
@@ -511,8 +505,7 @@ int check_before_mod(s21_decimal first, s21_decimal second, s21_decimal *result)
         (second.value_type == s21_NORMAL_VALUE && !s21_is_equal(zero, second))) {
         result->value_type = s21_NAN;
         done = 0;
-    } else if ((second.value_type == s21_INFINITY || second.value_type == s21_NEGATIVE_INFINITY) &&
-                first.value_type == s21_NORMAL_VALUE) {
+    } else if (second.value_type == s21_INFINITY || second.value_type == s21_NEGATIVE_INFINITY) {
         result->value_type = s21_NORMAL_VALUE;
         rewrite_decimal(first, result);
         done = 0;
@@ -580,10 +573,10 @@ int check_before_mul(s21_decimal first, s21_decimal second, s21_decimal *result)
             result->value_type = s21_NAN;
         } else if (first.value_type == second.value_type) {
             result->value_type = s21_INFINITY;
-        } else if (first.value_type != second.value_type) {
+        } else {
             result->value_type = s21_NEGATIVE_INFINITY;
         }
-        done = 0;            
+        done = 0;
     }
     return done;
 }
@@ -645,18 +638,18 @@ int check_before_add(s21_decimal first, s21_decimal second, s21_decimal *result)
 int compare_board_condition(s21_decimal decimalFirst, s21_decimal decimalSecond) {
     int result = 1;
     if (decimalFirst.value_type == s21_NEGATIVE_INFINITY &&
-       (decimalSecond.value_type == s21_INFINITY || 
+       (decimalSecond.value_type == s21_INFINITY ||
         decimalSecond.value_type == s21_NORMAL_VALUE)) {
         result = 0;
-    } else if (decimalSecond.value_type == s21_NEGATIVE_INFINITY && 
-              (decimalFirst.value_type == s21_INFINITY || 
+    } else if (decimalSecond.value_type == s21_NEGATIVE_INFINITY &&
+              (decimalFirst.value_type == s21_INFINITY ||
                decimalFirst.value_type == s21_NORMAL_VALUE)) {
         result = 1;
     } else if (decimalFirst.value_type == s21_NAN || decimalSecond.value_type == s21_NAN) {
         result = 1;
-    } else if ((decimalFirst.value_type == s21_NEGATIVE_INFINITY && 
+    } else if ((decimalFirst.value_type == s21_NEGATIVE_INFINITY &&
                 decimalSecond.value_type == s21_NEGATIVE_INFINITY) ||
-               (decimalFirst.value_type == s21_INFINITY && 
+               (decimalFirst.value_type == s21_INFINITY &&
                 decimalSecond.value_type == s21_INFINITY)) {
         result = 1;
     } else if (decimalFirst.value_type == s21_INFINITY &&
@@ -669,7 +662,7 @@ int compare_board_condition(s21_decimal decimalFirst, s21_decimal decimalSecond)
                decimalSecond.value_type == s21_NORMAL_VALUE) {
         result = -1;
     }
-    return result; 
+    return result;
 }
 // оператор <
 int s21_is_less(s21_decimal decimalFirst, s21_decimal decimalSecond) {
@@ -683,28 +676,27 @@ int s21_is_less(s21_decimal decimalFirst, s21_decimal decimalSecond) {
         } else if (signSecond > signFirst) {
             result = 1;
         } else {
-            //printf("tut\n");
             convert_equal_scale(&decimalFirst, &decimalSecond);
 
     //             printf("second\n");
     // for (int i = 127; i >= 0; i--)
     // printf("%d", check_bit(i, decimalSecond));
-    // printf("\n");  
+    // printf("\n");
 
     // printf("buffer\n");
     // for (int i = 127; i >= 0; i--)
     // printf("%d", check_bit(i, decimalFirst));
-    // printf("\n");  
+    // printf("\n");
 
             if (decimalFirst.value_type == s21_INFINITY) {
                 if (signFirst)
                     result = 0;
-                else 
+                else
                     result = 1;
             } else if (decimalSecond.value_type == s21_INFINITY) {
                 if (signFirst)
                     result = 1;
-                else 
+                else
                     result = 0;
             } else {
                 result = compare_decimal(decimalFirst, decimalSecond);
@@ -721,17 +713,17 @@ int s21_is_less(s21_decimal decimalFirst, s21_decimal decimalSecond) {
 // оператор ==
 int s21_is_equal(s21_decimal decimalFirst, s21_decimal decimalSecond) {
     int result = 1;
-    if (decimalFirst.value_type == decimalSecond.value_type && 
+    if (decimalFirst.value_type == decimalSecond.value_type &&
         decimalFirst.value_type == s21_NORMAL_VALUE) {
         if (check_bit(127, decimalFirst) == check_bit(127, decimalSecond)) {
             convert_equal_scale(&decimalFirst, &decimalSecond);
-            if (decimalFirst.value_type != s21_INFINITY && 
+            if (decimalFirst.value_type != s21_INFINITY &&
                 decimalSecond.value_type != s21_INFINITY) {
                 if (!compare_decimal(decimalFirst, decimalSecond))
                     result = 0;
             }
         }
-    } else if (decimalFirst.value_type == decimalSecond.value_type && 
+    } else if (decimalFirst.value_type == decimalSecond.value_type &&
                decimalFirst.value_type != s21_NAN) {
         result  = 0;
     }
@@ -747,14 +739,14 @@ int s21_is_not_equal(s21_decimal decimalFirst, s21_decimal decimalSecond) {
 // оператор >
 int s21_is_greater(s21_decimal decimalFirst, s21_decimal decimalSecond) {
     int result = 1;
-    if (s21_is_less(decimalFirst, decimalSecond)) 
+    if (s21_is_less(decimalFirst, decimalSecond))
         result = 0;
     return result;
 }
 // сравнение только самих чисел decimal возвращает 1 если 1>2 и возвращает -1 если 1<2 и вовращает 0 если 1==2
 int compare_decimal(s21_decimal decimalFirst, s21_decimal decimalSecond) {
     int result;
-    for (int i = 95; i >= 0; i--){
+    for (int i = 95; i >= 0; i--) {
         result = check_bit(i, decimalFirst) - check_bit(i, decimalSecond);
         if (result != 0)
             break;
@@ -775,7 +767,7 @@ int s21_is_greater_or_equal(s21_decimal decimalFirst, s21_decimal decimalSecond)
         result = 0;
     return result;
 }
-// функция negate 
+// функция negate
 s21_decimal s21_negate(s21_decimal decimal) {
     s21_decimal decimalResult;
     int sign = check_bit(127, decimal);
@@ -786,7 +778,7 @@ s21_decimal s21_negate(s21_decimal decimal) {
     } else if (decimal.value_type != s21_NORMAL_VALUE) {
         if (decimal.value_type == s21_INFINITY)
             decimalResult.value_type = s21_NEGATIVE_INFINITY;
-        else 
+        else
             decimalResult.value_type = s21_INFINITY;
     } else {
         decimalResult = decimal;
