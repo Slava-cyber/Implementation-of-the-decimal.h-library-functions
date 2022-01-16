@@ -83,13 +83,12 @@ s21_decimal s21_mul(s21_decimal decimalFirst, s21_decimal decimalSecond) {
     int scaleFirst = get_ten_power(decimalFirst);
     int scaleSecond = get_ten_power(decimalSecond);
     int scale = scaleFirst + scaleSecond;
-    int inf = multiply(decimalFirst, decimalSecond, &decimalResult);
-    printf("scale:%d\n", scale);
-    printf("inf:%d\n", inf);
+    multiply(decimalFirst, decimalSecond, &decimalResult);
+
 
     if (check_before_mul(decimalFirst, decimalSecond, &decimalResult)) {
         if (decimalResult.value_type != s21_INFINITY && scale <= 28) {
-            printf("tuta\n");
+       
             set_ten_power(scale, &decimalResult);
             if (sign)
                 set_bit(127, &decimalResult);
@@ -104,10 +103,9 @@ s21_decimal s21_mul(s21_decimal decimalFirst, s21_decimal decimalSecond) {
             init_decimal(&decimalResult);
             if (sign) {
                 // .i. decimalResult.value_type == s21_NEGATIVE_INFINITY;
-                printf("-inf\n");
+          
             } else {
                 // .i. decimalResult.value_type == s21_INFINITY;
-                printf("inf\n");
             }
         }
     }
@@ -174,16 +172,15 @@ s21_decimal s21_add(s21_decimal decimalFirst, s21_decimal decimalSecond) {
         if (!signEqual) {
             int scale = convert_equal_scale(&decimalFirst, &decimalSecond);
             if (decimalFirst.value_type == s21_INFINITY) {
-                printf("1\n");
+            
                 rewrite_decimal(decimalFirstBuffer, &decimalResult);
                 decimalResult.value_type = s21_NORMAL_VALUE;
             } else if (decimalSecond.value_type == s21_INFINITY) {
-                printf("2\n");
+           
                 rewrite_decimal(decimalSecondBuffer, &decimalResult);
                 decimalResult.value_type = s21_NORMAL_VALUE;
             } else {
-                printf("3\n");
-                printf("scale:%d\n", scale);
+                
                 set_ten_power(scale, &decimalResult);
                 int inf = simple_add(decimalFirst, decimalSecond, &decimalResult);
                 if (inf) {
@@ -197,7 +194,7 @@ s21_decimal s21_add(s21_decimal decimalFirst, s21_decimal decimalSecond) {
                 set_bit(127, &decimalResult);
         } else {
             if (signFirst) {
-                printf("4\n");
+               
                 substraction_part(decimalFirst, decimalSecond, &decimalResult);
             } else {
                 substraction_part(decimalSecond, decimalFirst, &decimalResult);
@@ -248,8 +245,7 @@ int convert_equal_scale(s21_decimal *decimalFirst, s21_decimal *decimalSecond) {
     int scaleSecond = get_ten_power(*decimalSecond);
     int scale = scaleFirst;
     int inf = 0;
-    printf("scaleFirst:%d\n", scaleFirst);
-    printf("scaleSecond:%d\n", scaleSecond);
+    
     if (scaleFirst > scaleSecond && scaleFirst <= 28) {
         rewrite_decimal(*decimalSecond, &decimalSecondBuffer);
 
@@ -411,6 +407,8 @@ int check_bit(int position, s21_decimal dst) {
         check = 1;
     return check;
 }
+
+
 // ставим 1 в указанный бит
 int set_bit(int position, s21_decimal *dst) {
     int SetBitsArray = position / 32;
@@ -669,7 +667,6 @@ int s21_is_less(s21_decimal decimalFirst, s21_decimal decimalSecond) {
     int signFirst = check_bit(127, decimalFirst);
     int signSecond = check_bit(127, decimalSecond);
     int result = compare_board_condition(decimalFirst, decimalSecond);
-    printf("result:%d\n", result);
     if (result == -1) {
         if (signFirst > signSecond) {
             result = 0;
@@ -677,16 +674,6 @@ int s21_is_less(s21_decimal decimalFirst, s21_decimal decimalSecond) {
             result = 1;
         } else {
             convert_equal_scale(&decimalFirst, &decimalSecond);
-
-    //             printf("second\n");
-    // for (int i = 127; i >= 0; i--)
-    // printf("%d", check_bit(i, decimalSecond));
-    // printf("\n");
-
-    // printf("buffer\n");
-    // for (int i = 127; i >= 0; i--)
-    // printf("%d", check_bit(i, decimalFirst));
-    // printf("\n");
 
             if (decimalFirst.value_type == s21_INFINITY) {
                 if (signFirst)

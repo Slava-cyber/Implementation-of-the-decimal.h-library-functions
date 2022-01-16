@@ -3,35 +3,39 @@
 #include <stdlib.h>
 #include <float.h>
 #include <stdio.h>
+#include<string.h>
 
+
+
+// MARK: - Convert functions
 START_TEST(s21_decimal_test_1) {
+s21_decimal dec_y;
 
-unsigned  * numbers = malloc(sizeof(unsigned) * 300);
- s21_decimal dec_y;
-//  s21_decimal dec_a;
-//   s21_decimal dec_b;
-//   s21_decimal dec_res;
+ char binary[50][129] = {"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100011001010",
+ "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011110000011110011",
+ "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+ "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011000001101011001101010",
+ "10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000101110111101111100001011",
+ "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+ "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100110001001011001111111",
+ "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000101111101011110000011111111"
+ };
+                            
+unsigned examples[50] = {2250,123123,1,6346346,-12312331,0,9999999,99999999};
 
+char arr[127];
 
-//  dec_res = s21_add(dec_a, dec_b);
-s21_from_int_to_decimal(124,&dec_y);
-
-for(int i = 0;i < 128;i++) {
-    numbers[i] = check_bit(i,dec_y);
-}
-for(int i = 0;i < 128;i++) {
-    if (i % 32 == 0) {
-            printf("\n");
+for (int j = 0; j < 8;j++) {
+    s21_from_int_to_decimal(examples[j],&dec_y);
+    for(int i = 0;i < 128;i++) {
+        arr[i] = check_bit(127 - i,dec_y) + 48;
     }
-    printf("%d",numbers[i]);
+    arr[128] = '\0';
+    ck_assert_str_eq(binary[j], arr);
 }
-printf("\n");
-free(numbers);
 }
-
 END_TEST
 
- 
 Suite *example_suite_create() {
     Suite *s1 = suite_create("Test");
     TCase *s21_decimal_tests = tcase_create("Tests");
@@ -42,13 +46,10 @@ Suite *example_suite_create() {
 }
 
 int main() {
-
   Suite *s1 = example_suite_create();
-    // Runner
+ 
     SRunner *runner = srunner_create(s1);
-    // int number_failed;
     srunner_run_all(runner, CK_NORMAL);
-    // number_failed = srunner_ntests_failed(runner);
     srunner_free(runner);
     return 0;
 
