@@ -41,12 +41,15 @@ END_TEST
 /*-----------Convert from flaot to decimal-----------*/
 START_TEST(s21_decimal_test_from_float) {
     s21_decimal dec_y;
-    char binary[10][129] = {"00000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011000000101100"
+    char binary[4][129] = {"00000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011000000101100",
+        "10000000000001010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011000011011000000",
+        "00000000000001010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000010111",
+        "00000000000000110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011000100001000101"
     };
     
-    float examples[10] = {1.2332};
+    float examples[4] = {1.2332,-1.00032,0.00023,100.421};
     char arr[129];
-    for (int j = 0; j < 1;j++) {
+    for (int j = 0; j < 4;j++) {
         s21_from_float_to_decimal(examples[j],&dec_y);
         for(int i = 0;i < 128;i++) {
             arr[i] = check_bit(127 - i,dec_y) + 48;
@@ -57,6 +60,22 @@ START_TEST(s21_decimal_test_from_float) {
 }
 END_TEST
 
+
+/*-----------Convert from decimal to int-----------*/
+START_TEST(s21_decimal_test_from_decimal_to_int) {
+  s21_decimal src1, src2;
+    int a = 9403;
+    int b = 202;
+    int res_origin = 9605;
+    int res_our_dec = 0;
+    s21_from_int_to_decimal(a, &src1);
+    s21_from_int_to_decimal(b, &src2);
+    s21_decimal res_od = s21_add(src1, src2);
+    s21_from_decimal_to_int(res_od, &res_our_dec);
+    ck_assert_int_eq(res_our_dec, res_origin);
+}
+END_TEST
+
 int main() {
     
     Suite *s1 = suite_create("Convertors and parsers");
@@ -64,6 +83,8 @@ int main() {
     suite_add_tcase(s1, s21_decimal_tests);
     tcase_add_test(s21_decimal_tests, s21_decimal_test_from_int);
     tcase_add_test(s21_decimal_tests, s21_decimal_test_from_float);
+    tcase_add_test(s21_decimal_tests, s21_decimal_test_from_decimal_to_int);
+    
     
     Suite *s2 = suite_create("Comparison Operators");
     TCase *s21_decimal_tests2 = tcase_create("Tests");
