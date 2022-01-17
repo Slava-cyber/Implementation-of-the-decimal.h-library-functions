@@ -8,49 +8,93 @@
 
 
 // MARK: - Convert functions
-START_TEST(s21_decimal_test_1) {
-s21_decimal dec_y;
-
- char binary[50][129] = {"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100011001010",
- "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011110000011110011",
- "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001",
- "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011000001101011001101010",
- "10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000101110111101111100001011",
- "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
- "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100110001001011001111111",
- "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000101111101011110000100000000"
- };
-                            
-unsigned examples[50] = {2250,123123,1,6346346,-12312331,0,9999999,1E+08};
-
-char arr[127];
-
-for (int j = 0; j < 8;j++) {
-    s21_from_int_to_decimal(examples[j],&dec_y);
-    for(int i = 0;i < 128;i++) {
-        arr[i] = check_bit(127 - i,dec_y) + 48;
+/*-----------Convert from int to decimal-----------*/
+START_TEST(s21_decimal_test_from_int) {
+    s21_decimal dec_y;
+    
+    char binary[8][129] = {"00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100011001010",
+        "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011110000011110011",
+        "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+        "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011000001101011001101010",
+        "10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000101110111101111100001011",
+        "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100110001001011001111111",
+        "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000101111101011110000100000000"
+    };
+    
+    unsigned examples[8] = {2250,123123,1,6346346,-12312331,0,9999999,1E+08};
+    
+    char arr[129];
+    
+    for (int j = 0; j < 8;j++) {
+        s21_from_int_to_decimal(examples[j],&dec_y);
+        for(int i = 0;i < 128;i++) {
+            arr[i] = check_bit(127 - i,dec_y) + 48;
+        }
+        arr[128] = '\0';
+        ck_assert_str_eq(binary[j], arr);
     }
-    arr[128] = '\0';
-    ck_assert_str_eq(binary[j], arr);
-}
 }
 END_TEST
 
-Suite *example_suite_create() {
-    Suite *s1 = suite_create("Test");
-    TCase *s21_decimal_tests = tcase_create("Tests");
-    suite_add_tcase(s1, s21_decimal_tests);
-    tcase_add_test(s21_decimal_tests, s21_decimal_test_1);
- 
-    return s1;
+
+/*-----------Convert from flaot to decimal-----------*/
+START_TEST(s21_decimal_test_from_float) {
+    s21_decimal dec_y;
+    char binary[10][129] = {"00000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011000000101100"
+    };
+    
+    float examples[10] = {1.2332};
+    char arr[129];
+    for (int j = 0; j < 1;j++) {
+        s21_from_float_to_decimal(examples[j],&dec_y);
+        for(int i = 0;i < 128;i++) {
+            arr[i] = check_bit(127 - i,dec_y) + 48;
+        }
+        arr[128] = '\0';
+        ck_assert_str_eq(binary[j], arr);
+    }
 }
+END_TEST
 
 int main() {
-  Suite *s1 = example_suite_create();
- 
+    
+    Suite *s1 = suite_create("Convertors and parsers");
+    TCase *s21_decimal_tests = tcase_create("Tests");
+    suite_add_tcase(s1, s21_decimal_tests);
+    tcase_add_test(s21_decimal_tests, s21_decimal_test_from_int);
+    tcase_add_test(s21_decimal_tests, s21_decimal_test_from_float);
+    
+    Suite *s2 = suite_create("Comparison Operators");
+    TCase *s21_decimal_tests2 = tcase_create("Tests");
+    suite_add_tcase(s2, s21_decimal_tests2);
+    
+    Suite *s3 = suite_create("Arithmetic Operators");
+    TCase *s21_decimal_tests3 = tcase_create("Tests");
+    suite_add_tcase(s3, s21_decimal_tests3);
+    
+    Suite *s4 = suite_create("Another functions");
+       TCase *s21_decimal_tests4 = tcase_create("Tests");
+       suite_add_tcase(s4, s21_decimal_tests4);
+   
+    
+    
+    
     SRunner *runner = srunner_create(s1);
+    SRunner *runner1 = srunner_create(s2);
+    SRunner *runner2 = srunner_create(s3);
+    SRunner *runner3 = srunner_create(s4);
+    
     srunner_run_all(runner, CK_NORMAL);
+    srunner_run_all(runner1, CK_NORMAL);
+    srunner_run_all(runner2, CK_NORMAL);
+    srunner_run_all(runner3, CK_NORMAL);
+    
     srunner_free(runner);
+    srunner_free(runner1);
+    srunner_free(runner2);
+    srunner_free(runner3);
+    
     return 0;
-
+    
 }

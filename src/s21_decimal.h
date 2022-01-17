@@ -5,7 +5,6 @@
 #include <math.h>
 #include <limits.h>
 
-
 typedef enum {
     s21_NORMAL_VALUE = 0,
     s21_INFINITY = 1,
