@@ -38,7 +38,7 @@ START_TEST(s21_decimal_test_from_int) {
 END_TEST
 
 
-/*-----------Convert from flaot to decimal-----------*/
+/*-----------Convert from float to decimal-----------*/
 START_TEST(s21_decimal_test_from_float) {
     s21_decimal dec_y;
     char binary[4][129] = {"00000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011000000101100",
@@ -63,18 +63,66 @@ END_TEST
 
 /*-----------Convert from decimal to int-----------*/
 START_TEST(s21_decimal_test_from_decimal_to_int) {
-  s21_decimal src1, src2;
-    int a = 9403;
-    int b = 202;
-    int res_origin = 9605;
-    int res_our_dec = 0;
-    s21_from_int_to_decimal(a, &src1);
-    s21_from_int_to_decimal(b, &src2);
-    s21_decimal res_od = s21_add(src1, src2);
-    s21_from_decimal_to_int(res_od, &res_our_dec);
-    ck_assert_int_eq(res_our_dec, res_origin);
+
+    
+    int valuesA[] = {9403,111,0,100,-1123,};
+    int valuesB[] = {202,34,0,100,-111};
+    int originValues[] = {9605,145,0,200,-1234};
+    s21_decimal src1, src2;
+    int a;
+    int b;
+    int res_origin;
+    int res_our_dec;
+    for (int i = 0; i < 5;i++) {
+        res_our_dec = 0;
+        a = valuesA[i];
+        b = valuesB[i];
+        res_origin = originValues[i];
+        
+        s21_from_int_to_decimal(a, &src1);
+        s21_from_int_to_decimal(b, &src2);
+        s21_decimal res_od = s21_add(src1, src2);
+        s21_from_decimal_to_int(res_od, &res_our_dec);
+        ck_assert_int_eq(res_our_dec, res_origin);
+    }
+    
 }
 END_TEST
+
+
+
+/*-----------Convert from decimal to float-----------*/
+START_TEST(s21_decimal_test_from_decimal_to_float) {
+
+    
+    float valuesA[] = {0.111,0.002,0,-0.333,0.000001,};
+    float valuesB[] = {0.111,0.003,0,-0.111,0.000005};
+    float originValues[] = {0.222,0.005,0,-0.444,0.000006};
+    s21_decimal src1, src2;
+    float a;
+    float b;
+    float res_origin;
+    float res_our_dec;
+    for (int i = 0; i < 5;i++) {
+        res_our_dec = 0;
+        a = valuesA[i];
+        b = valuesB[i];
+        res_origin = originValues[i];
+    
+
+        s21_from_float_to_decimal(a, &src1);
+        s21_from_float_to_decimal(b, &src2);
+        s21_decimal res_od = s21_add(src1, src2);
+        s21_from_decimal_to_float(res_od, &res_our_dec);
+        ck_assert_float_eq(res_our_dec, res_origin);
+    }
+    
+}
+END_TEST
+
+
+
+
 
 int main() {
     
@@ -84,6 +132,7 @@ int main() {
     tcase_add_test(s21_decimal_tests, s21_decimal_test_from_int);
     tcase_add_test(s21_decimal_tests, s21_decimal_test_from_float);
     tcase_add_test(s21_decimal_tests, s21_decimal_test_from_decimal_to_int);
+    tcase_add_test(s21_decimal_tests, s21_decimal_test_from_decimal_to_float);
     
     
     Suite *s2 = suite_create("Comparison Operators");
