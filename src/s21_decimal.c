@@ -248,8 +248,8 @@ int convert_equal_scale(s21_decimal *decimalFirst, s21_decimal *decimalSecond) {
     int scaleSecond = get_ten_power(*decimalSecond);
     int scale = scaleFirst;
     int inf = 0;
-    printf("scaleFirst:%d\n", scaleFirst);
-    printf("scaleSecond:%d\n", scaleSecond);
+    // printf("scaleFirst:%d\n", scaleFirst);
+    // printf("scaleSecond:%d\n", scaleSecond);
     if (scaleFirst > scaleSecond && scaleFirst <= 28) {
         rewrite_decimal(*decimalSecond, &decimalSecondBuffer);
 
@@ -669,7 +669,7 @@ int s21_is_less(s21_decimal decimalFirst, s21_decimal decimalSecond) {
     int signFirst = check_bit(127, decimalFirst);
     int signSecond = check_bit(127, decimalSecond);
     int result = compare_board_condition(decimalFirst, decimalSecond);
-    printf("result:%d\n", result);
+    // printf("result:%d\n", result);
     if (result == -1) {
         if (signFirst > signSecond) {
             result = 0;
