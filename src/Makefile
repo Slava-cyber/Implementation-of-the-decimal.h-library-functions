@@ -24,6 +24,7 @@ endif
 	gcov s21_test_gcov
 	lcov -t "s21_decimal" -o s21_decimal.info -c -d .
 	genhtml -o report s21_decimal.info
+	open report/index.html
 
 s21_test.o: s21_test.c
 	gcc $(CFLAGS) s21_test.c -o s21_test.o
