@@ -313,6 +313,32 @@ START_TEST(s21_decimal_test_div) {
 }
 } END_TEST
 
+START_TEST(s21_decimal_test_div1) {
+    
+    float valuesA[] = {0,0,1E+3,-1111.11,11};
+    float valuesB[] = {100.1123,-2,1E+2,-1,1E+03};
+    float originValues[] = {0,0,10,1111,0};   // 8=====D
+    s21_decimal src1, src2;
+    float a;
+    float b;
+    float res_origin;
+    float res_our_dec;
+    for (int i = 0; i < 5;i++) {
+        res_our_dec = 0;
+        a = valuesA[i];
+        b = valuesB[i];
+        res_origin = originValues[i];
+
+
+        s21_from_float_to_decimal(a, &src1);
+        s21_from_float_to_decimal(b, &src2);
+        s21_decimal res_od = s21_div(src1, src2);
+        s21_from_decimal_to_float(res_od, &res_our_dec);
+        ck_assert_float_eq(res_our_dec, res_origin);
+    
+}
+} END_TEST  
+
 /*-----------Mod-----------*/
 START_TEST(s21_decimal_test_mod) {
     
@@ -445,6 +471,23 @@ START_TEST(s21_decimal_test_truncate) {
     ck_assert_float_eq(res_od.bits[1], result.bits[1]);
     ck_assert_float_eq(res_od.bits[2], result.bits[2]);
     ck_assert_float_eq(res_od.bits[3], result.bits[3]);
+    
+} END_TEST
+
+START_TEST(s21_decimal_test_truncate1) {
+    
+    float valuesA[] = {1123.1123,0,-12.4124,-321};
+    float originValues[] = {1123,0,-12,-321};
+    s21_decimal src1, res_od;
+    float a,b;
+    for (int i = 0; i < 4; i++) {
+        a = valuesA[i];
+        s21_from_float_to_decimal(a, &src1);
+        res_od = s21_truncate(src1);
+        s21_from_decimal_to_float(res_od, &b);
+        ck_assert_float_eq(b, originValues[i]);    
+        }
+    
     
 } END_TEST
 
@@ -793,6 +836,7 @@ int main() {
     tcase_add_test(s21_decimal_tests3, s21_decimal_test_mult3);
     tcase_add_test(s21_decimal_tests3, s21_decimal_test_mult4);
     tcase_add_test(s21_decimal_tests3, s21_decimal_test_div);
+    tcase_add_test(s21_decimal_tests3, s21_decimal_test_div1);
     tcase_add_test(s21_decimal_tests3, s21_decimal_test_mod);
     
     
@@ -803,6 +847,7 @@ int main() {
     suite_add_tcase(s4, s21_decimal_tests4);
     tcase_add_test(s21_decimal_tests4, s21_decimal_test_negate);
     tcase_add_test(s21_decimal_tests4, s21_decimal_test_truncate);
+    tcase_add_test(s21_decimal_tests4, s21_decimal_test_truncate1);
     tcase_add_test(s21_decimal_tests4, s21_decimal_test_round);
     tcase_add_test(s21_decimal_tests4, s21_decimal_test_floor);
     
