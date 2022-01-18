@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include<stdbool.h>
 
 #include "s21_decimal.h"
 
@@ -564,170 +565,126 @@ START_TEST(s21_decimal_test_floor) {
     
 } END_TEST
 
-/*-----------Comprasion-----------*/
-START_TEST(s21_decimal_test_less_than) {
 
-    int valuesA[] = {100,200000,1E+3,-111111,1E+02};
-    int valuesB[] = {1000,100000,1E+2,-1,1E+03};
-    int originValues[] = {0,1,1,0,0};
+
+//MARK: - Comparison operatots
+
+/*-----------Less-----------*/
+START_TEST(s21_decimal_test_less) {
+    
+    float valuesA[] = {11240,1,12.4124,1E+03};
+    float valuesB[] = {11240,0,1.6532,1E+04};
+    float originValues[] = {1,1,1,0};
     s21_decimal src1, src2;
-    int a;
-    int b;
-    int res_origin;
-    int res_our_dec;
-
-    for (int i = 0; i < 4;i++) {
-        res_our_dec = 0;
+    int a,b;
+    for (int i = 0; i < 4; i++) {
         a = valuesA[i];
         b = valuesB[i];
-        res_origin = originValues[i];
-        
-        
-        s21_from_int_to_decimal(a, &src1);
-        s21_from_int_to_decimal(b, &src2);
-        int res_od = s21_is_less(src1, src2);
-        ck_assert_int_eq(res_od, res_origin);
+        s21_from_float_to_decimal(a, &src1);
+        s21_from_float_to_decimal(b, &src2);
+        ck_assert_int_eq(s21_is_less(src1, src2), originValues[i]);    
+        }
     
-}
+    
 } END_TEST
 
+/*-----------Less_or_equal-----------*/
 START_TEST(s21_decimal_test_less_or_equal) {
-
-    int valuesA[] = {1000,-200000,1E+3,-111111,1E+02};
-    int valuesB[] = {1000,-200000,1E+2,-1,1E+03};
-    int originValues[] = {0,0,1,0,0};
+    
+    float valuesA[] = {11240,1,12.4124,1E+03};
+    float valuesB[] = {11240,0,1.6532,1E+04};
+    float originValues[] = {0,1,1,0};
     s21_decimal src1, src2;
-    int a;
-    int b;
-    int res_origin;
-    int res_our_dec;
-
-    for (int i = 0; i < 4;i++) {
-        res_our_dec = 0;
+    int a,b;
+    for (int i = 0; i < 4; i++) {
         a = valuesA[i];
         b = valuesB[i];
-        res_origin = originValues[i];
-        
-        
-        s21_from_int_to_decimal(a, &src1);
-        s21_from_int_to_decimal(b, &src2);
-        int res_od = s21_is_less_or_equal(src1, src2);
-        ck_assert_int_eq(res_od, res_origin);
+        s21_from_float_to_decimal(a, &src1);
+        s21_from_float_to_decimal(b, &src2);
+        ck_assert_int_eq(s21_is_less_or_equal(src1, src2), originValues[i]);    
+        }
     
-}
+    
 } END_TEST
 
-START_TEST(s21_decimal_test_greater) {
-
-    int valuesA[] = {1000,200000,1E+3,-111111,1E+02};
-    int valuesB[] = {1000,-200000,1E+2,-1,1E+03};
-    int originValues[] = {1,0,0,1,1};
+/*-----------Greater than-----------*/
+START_TEST(s21_decimal_test_greather) {
+    
+    float valuesA[] = {11240,1,12.4124,1E+03};
+    float valuesB[] = {11240,0,1.6532,1E+04};
+    float originValues[] = {0,0,0,1}; // 8=====D
     s21_decimal src1, src2;
-    int a;
-    int b;
-    int res_origin;
-    int res_our_dec;
-
-    for (int i = 0; i < 4;i++) {
-        res_our_dec = 0;
+    int a,b;
+    for (int i = 0; i < 1; i++) {
         a = valuesA[i];
         b = valuesB[i];
-        res_origin = originValues[i];
-        
-        
-        s21_from_int_to_decimal(a, &src1);
-        s21_from_int_to_decimal(b, &src2);
-        int res_od = s21_is_greater(src1, src2);
-                printf("\nres_od №%d: %d\n", i, res_od);
-        printf("\norigin_values №%d: %d\n", i, originValues[i]);
-        ck_assert_int_eq(res_od, res_origin);
+        s21_from_float_to_decimal(a, &src1);
+        s21_from_float_to_decimal(b, &src2);
+        ck_assert_int_eq(s21_is_greater(src1, src2), originValues[i]);    
+        }
     
-}
+    
 } END_TEST
 
-START_TEST(s21_decimal_test_greater_or_equal) {
 
-    int valuesA[] = {1000,200000,1E+3,-111111,1E+02};
-    int valuesB[] = {1000,-200000,1E+2,-1,1E+03};
-    int originValues[] = {0,0,0,1,1};
+/*-----------Greater than or equal to-----------*/
+START_TEST(s21_decimal_test_greather_or_equal) {
+    
+    float valuesA[] = {11240,1,12.4124,1E+03};
+    float valuesB[] = {11240,0,1.6532,1E+04};
+    float originValues[] = {0,0,0,1};
     s21_decimal src1, src2;
-    int a;
-    int b;
-    int res_origin;
-    int res_our_dec;
-
-    for (int i = 0; i < 4;i++) {
-        res_our_dec = 0;
+    int a,b;
+    for (int i = 0; i < 4; i++) {
         a = valuesA[i];
         b = valuesB[i];
-        res_origin = originValues[i];
-        
-        
-        s21_from_int_to_decimal(a, &src1);
-        s21_from_int_to_decimal(b, &src2);
-        int res_od = s21_is_greater_or_equal(src1, src2);
-        // printf("\nres_od №%d: %d\n", i, res_od);
-        // printf("\norigin_values №%d: %d\n", i, originValues[i]);
-        ck_assert_int_eq(res_od, res_origin);
+        s21_from_float_to_decimal(a, &src1);
+        s21_from_float_to_decimal(b, &src2);
+        ck_assert_int_eq(s21_is_greater_or_equal(src1, src2), originValues[i]);    
+        }
     
-}
+    
 } END_TEST
 
-START_TEST(s21_decimal_test_equal) {
-
-    int valuesA[] = {1000,200000,1E+3,-111111,1E+02};
-    int valuesB[] = {1000,-200000,1E+2,-1,1E+03};
-    int originValues[] = {0,1,1,1,1};
+/*-----------Equal to-----------*/
+START_TEST(s21_decimal_test_equal_to) {
+    
+    float valuesA[] = {11240,1,12.4124,1E+03};
+    float valuesB[] = {11240,0,1.6532,1E+04};
+    float originValues[] = {0,1,1,1};
     s21_decimal src1, src2;
-    int a;
-    int b;
-    int res_origin;
-    int res_our_dec;
-
-    for (int i = 0; i < 4;i++) {
-        res_our_dec = 0;
+    int a,b;
+    for (int i = 0; i < 4; i++) {
         a = valuesA[i];
         b = valuesB[i];
-        res_origin = originValues[i];
-        
-        
-        s21_from_int_to_decimal(a, &src1);
-        s21_from_int_to_decimal(b, &src2);
-        int res_od = s21_is_equal(src1, src2);
-        // printf("\nres_od №%d: %d\n", i, res_od);
-        // printf("\norigin_values №%d: %d\n", i, originValues[i]);
-        ck_assert_int_eq(res_od, res_origin);
+        s21_from_float_to_decimal(a, &src1);
+        s21_from_float_to_decimal(b, &src2);
+        ck_assert_int_eq(s21_is_equal(src1, src2), originValues[i]);    
+        }
     
-}
+    
 } END_TEST
 
-START_TEST(s21_decimal_test_not_equal) {
 
-    int valuesA[] = {1000,-200000,-1E+3,-111111,1E+03};
-    int valuesB[] = {1000,-200000,-1E+3,-1,1E+03};
-    int originValues[] = {1,1,1,0,1};
+/*-----------Not equal to-----------*/
+START_TEST(s21_decimal_test_is_not_equal_to) {
+    
+    float valuesA[] = {11240,1,12.4124,1E+04};
+    float valuesB[] = {1120,0,1.6532,1E+04};
+    float originValues[] = {0,0,0,1};
     s21_decimal src1, src2;
-    int a;
-    int b;
-    int res_origin;
-    int res_our_dec;
-
-    for (int i = 0; i < 4;i++) {
-        res_our_dec = 0;
+    int a,b;
+    for (int i = 0; i < 4; i++) {
         a = valuesA[i];
         b = valuesB[i];
-        res_origin = originValues[i];
-        
-        
-        s21_from_int_to_decimal(a, &src1);
-        s21_from_int_to_decimal(b, &src2);
-        int res_od = s21_is_not_equal(src1, src2);
-        // printf("\nres_od №%d: %d\n", i, res_od);
-        // printf("\norigin_values №%d: %d\n", i, originValues[i]);
-        ck_assert_int_eq(res_od, res_origin);
+        s21_from_float_to_decimal(a, &src1);
+        s21_from_float_to_decimal(b, &src2);
+        ck_assert_int_eq(s21_is_not_equal(src1, src2), originValues[i]);    
+        }
     
-}
+    
 } END_TEST
+
 
 
 int main() {
@@ -742,13 +699,14 @@ int main() {
     Suite *s2 = suite_create("Comparison Operators");
     TCase *s21_decimal_tests2 = tcase_create("Tests");
     suite_add_tcase(s2, s21_decimal_tests2);
-    tcase_add_test(s21_decimal_tests2, s21_decimal_test_less_than);
+    tcase_add_test(s21_decimal_tests2, s21_decimal_test_less);
     tcase_add_test(s21_decimal_tests2, s21_decimal_test_less_or_equal);
-    tcase_add_test(s21_decimal_tests2, s21_decimal_test_greater);
-    tcase_add_test(s21_decimal_tests2, s21_decimal_test_greater_or_equal);
-    tcase_add_test(s21_decimal_tests2, s21_decimal_test_equal);
-    tcase_add_test(s21_decimal_tests2, s21_decimal_test_not_equal);
-    
+    tcase_add_test(s21_decimal_tests2,   s21_decimal_test_greather);
+    tcase_add_test(s21_decimal_tests2,   s21_decimal_test_greather_or_equal);
+    tcase_add_test(s21_decimal_tests2,   s21_decimal_test_equal_to);
+    tcase_add_test(s21_decimal_tests2,   s21_decimal_test_is_not_equal_to);
+
+
     Suite *s3 = suite_create("Arithmetic Operators");
     TCase *s21_decimal_tests3 = tcase_create("Tests");
     suite_add_tcase(s3, s21_decimal_tests3);
