@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include<stdbool.h>
-
 #include "s21_decimal.h"
 
 // MARK: - Convert functions
@@ -686,7 +685,7 @@ START_TEST(s21_decimal_test_less_or_equal) {
 /*-----------Greater than-----------*/
 START_TEST(s21_decimal_test_greather) {
     
-    float valuesA[] = {11240,1,12.4124,1E+03};
+    float valuesA[] = {11241,1,12.4124,1E+03};
     float valuesB[] = {11240,0,1.6532,1E+04};
     float originValues[] = {0,0,0,1}; // 8=====D
     s21_decimal src1, src2;

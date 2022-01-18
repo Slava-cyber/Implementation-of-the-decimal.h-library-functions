@@ -33,7 +33,7 @@ s21_decimal s21_div(s21_decimal decimalFirst, s21_decimal decimalSecond) {
     if (check_before_div(decimalFirst, decimalSecond, &decimalResult)) {
         delete_bit(127, &decimalSecond);
         convert_equal_scale(&decimalFirst, &decimalSecond);
-       get_ten_power(decimalFirst);
+        get_ten_power(decimalFirst);
         divide_int(decimalFirst, decimalSecond, &decimalResult);
         if (sign)
             set_bit(127, &decimalResult);
@@ -90,12 +90,11 @@ s21_decimal s21_mul(s21_decimal decimalFirst, s21_decimal decimalSecond) {
     int scaleSecond = get_ten_power(decimalSecond);
     int scale = scaleFirst + scaleSecond;
     int inf = multiply(decimalFirst, decimalSecond, &decimalResult);
-//    printf("scale:%d\n", scale);
-//    printf("inf:%d\n", inf);
+
     
     if (check_before_mul(decimalFirst, decimalSecond, &decimalResult)) {
         if (!inf && scale <= 28) {
-//            printf("tuta\n");
+            // printf("tuta\n");
             set_ten_power(scale, &decimalResult);
             if (sign)
                 set_bit(127, &decimalResult);
@@ -104,7 +103,7 @@ s21_decimal s21_mul(s21_decimal decimalFirst, s21_decimal decimalSecond) {
             s21_decimal decimalOne;
             init_decimal(&decimalOne);
             s21_from_int_to_decimal(10, &decimalOne);
-//            printf("!!!\n");
+            // printf("!!!\n");
             while (scale > 28) {
                 divide_int(decimalResult, decimalOne, &decimalResult);
                 scale -= 1;
@@ -113,7 +112,7 @@ s21_decimal s21_mul(s21_decimal decimalFirst, s21_decimal decimalSecond) {
             decimalResult.value_type = s21_NORMAL_VALUE;
             // делим на 10 и уменьшаем скейл сравнивая с нулем
         } else if (inf && scale != 0) {
-//            printf("new!\n");
+            // printf("new!\n");
             s21_decimal decimalOne;
             init_decimal(&decimalOne);
             s21_from_int_to_decimal(10, &decimalOne);
@@ -137,7 +136,7 @@ s21_decimal s21_mul(s21_decimal decimalFirst, s21_decimal decimalSecond) {
                 decimalResult.value_type = s21_NEGATIVE_INFINITY;
                 //printf("-inf\n");
             } else {
-                decimalResult.value_type = s21_INFINITY;
+                decimalResult.value_type = s21_INFINITY;   
                 //printf("inf\n");
             }
         }
@@ -228,16 +227,16 @@ s21_decimal s21_add(s21_decimal decimalFirst, s21_decimal decimalSecond) {
         if (!signEqual) {
             scale = convert_equal_scale(&decimalFirst, &decimalSecond);
             if (decimalFirst.value_type == s21_INFINITY) {
-//                printf("1\n");
+                // printf("1\n");
                 rewrite_decimal(decimalFirstBuffer, &decimalResult);
                 decimalResult.value_type = s21_NORMAL_VALUE;
             } else if (decimalSecond.value_type == s21_INFINITY) {
-//                printf("2\n");
+                // printf("2\n");
                 rewrite_decimal(decimalSecondBuffer, &decimalResult);
                 decimalResult.value_type = s21_NORMAL_VALUE;
             } else {
-//                printf("3\n");
-//                printf("scale:%d\n", scale);
+                // printf("3\n");
+                // printf("scale:%d\n", scale);
                 set_ten_power(scale, &decimalResult);
                 inf = simple_add(decimalFirst, decimalSecond, &decimalResult);
                 if (inf) {
@@ -251,7 +250,7 @@ s21_decimal s21_add(s21_decimal decimalFirst, s21_decimal decimalSecond) {
                 set_bit(127, &decimalResult);
         } else {
             if (signFirst) {
-//                printf("4\n");
+                // printf("4\n");
                 substraction_part(decimalFirst, decimalSecond, &decimalResult);
             } else {
                 substraction_part(decimalSecond, decimalFirst, &decimalResult);
@@ -302,8 +301,8 @@ int convert_equal_scale(s21_decimal *decimalFirst, s21_decimal *decimalSecond) {
     int scaleSecond = get_ten_power(*decimalSecond);
     int scale = scaleFirst;
     int inf = 0;
-//    printf("scaleFirst:%d\n", scaleFirst);
-//    printf("scaleSecond:%d\n", scaleSecond);
+    // printf("scaleFirst:%d\n", scaleFirst);
+    // printf("scaleSecond:%d\n", scaleSecond);
     if (scaleFirst > scaleSecond && scaleFirst <= 28) {
             /*    printf("\n");
         for (int i = 127; i >= 0; i--)
@@ -750,7 +749,7 @@ int s21_is_less(s21_decimal decimalFirst, s21_decimal decimalSecond) {
     int signFirst = check_bit(127, decimalFirst);
     int signSecond = check_bit(127, decimalSecond);
     int result = compare_board_condition(decimalFirst, decimalSecond);
-//    printf("result:%d\n", result);
+    // printf("result:%d\n", result);
     if (result == -1) {
         if (signFirst > signSecond) {
             result = 0;
@@ -821,7 +820,7 @@ int s21_is_not_equal(s21_decimal decimalFirst, s21_decimal decimalSecond) {
 // оператор >
 int s21_is_greater(s21_decimal decimalFirst, s21_decimal decimalSecond) {
     int result = 1;
-    if (s21_is_less(decimalFirst, decimalSecond)) 
+    if (s21_is_less_or_equal(decimalFirst, decimalSecond)) 
         result = 0;
     return result;
 }
@@ -882,7 +881,7 @@ s21_decimal s21_truncate(s21_decimal decimal) {
     } else {
         s21_from_float_to_decimal(1.0, &decimalOne);
         convert_equal_scale(&decimal, &decimalOne);
-         get_ten_power(decimal);
+      get_ten_power(decimal);
         divide_int(decimal, decimalOne, &decimalResult);
         if (check_bit(127, decimal))
             set_bit(127, &decimalResult);
@@ -917,7 +916,7 @@ s21_decimal s21_round(s21_decimal decimal) {
     decimalOne.value_type = s21_NORMAL_VALUE;
     decimalHalf.value_type = s21_NORMAL_VALUE;
     decimalBuffer.value_type = s21_NORMAL_VALUE;
-//    float f;
+    
     if (decimal.value_type != s21_NORMAL_VALUE) {
         decimalResult.value_type = decimal.value_type;
     } else {
