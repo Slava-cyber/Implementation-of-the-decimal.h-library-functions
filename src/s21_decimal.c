@@ -88,39 +88,39 @@ int main() {
     //float a = 0.00035063;
     int d1 = 1E+08;
     int d2;
-    float a1 = 0.00043;
-    float a2 = 10E27;
+    float a1 = 11240;
+    float a2 = 11240;
     s21_decimal decimal1, decimal2, decimal3;
     init_decimal(&decimal3);
     s21_from_float_to_decimal(a1, &decimal1);
     s21_from_float_to_decimal(a2, &decimal2);
     //set_ten_power(30, &decimal1);
-           printf("decimal1\n");
-    for (int i = 127; i >= 0; i--)
-    printf("%d", check_bit(i, decimal1));
-    printf("\n");  
+    //        printf("decimal1\n");
+    // for (int i = 127; i >= 0; i--)
+    // printf("%d", check_bit(i, decimal1));
+    // printf("\n");  
 
-    printf("decimal2\n");
-    for (int i = 127; i >= 0; i--)
-    printf("%d", check_bit(i, decimal2));
-    printf("\n");
-    decimal3 = s21_mul(decimal2, decimal1);
-        printf("|||||decimal1\n");
-    for (int i = 127; i >= 0; i--)
-    printf("%d", check_bit(i, decimal1));
-    printf("\n");  
+    // printf("decimal2\n");
+    // for (int i = 127; i >= 0; i--)
+    // printf("%d", check_bit(i, decimal2));
+    // printf("\n");
+    // decimal3 = s21_mul(decimal2, decimal1);
+    //     printf("|||||decimal1\n");
+    // for (int i = 127; i >= 0; i--)
+    // printf("%d", check_bit(i, decimal1));
+    // printf("\n");  
 
-    printf("decimal2\n");
-    for (int i = 127; i >= 0; i--)
-    printf("%d", check_bit(i, decimal2));
-    printf("\n");
+    // printf("decimal2\n");
+    // for (int i = 127; i >= 0; i--)
+    // printf("%d", check_bit(i, decimal2));
+    // printf("\n");
 
-    printf("decimal3\n");
-    for (int i = 127; i >= 0; i--)
-    printf("%d", check_bit(i, decimal3));
-    printf("\n");  
+    // printf("decimal3\n");
+    // for (int i = 127; i >= 0; i--)
+    // printf("%d", check_bit(i, decimal3));
+    // printf("\n");  
 
-    //printf("less:%d\n", s21_is_greater_or_equal(decimal2, decimal1));
+    printf("less:%d\n", s21_is_greater(decimal2, decimal1));
     //decimal2 = s21_round(decimal2);
     s21_from_decimal_to_float(decimal3, &b);
     if (decimal3.value_type == s21_NORMAL_VALUE)
@@ -949,7 +949,7 @@ int s21_is_not_equal(s21_decimal decimalFirst, s21_decimal decimalSecond) {
 // оператор >
 int s21_is_greater(s21_decimal decimalFirst, s21_decimal decimalSecond) {
     int result = 1;
-    if (s21_is_less(decimalFirst, decimalSecond)) 
+    if (s21_is_less_or_equal(decimalFirst, decimalSecond)) 
         result = 0;
     return result;
 }
