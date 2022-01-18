@@ -804,6 +804,29 @@ START_TEST(s21_decimal_test_is_not_equal_to) {
 } END_TEST
 
 
+/*-----------Check before sub-----------*/
+START_TEST(s21_decimal_test_check_before_sub) {
+    float valuesA[] = {-2147483647,0,22.22,-22.22};
+    float valuesB[] = {2147483647,1,2,-22.22};
+    float originValues[] = {2,0,11.11,1};
+    int values[] = {1,1,1,1};
+    float a,b,c;
+    s21_decimal src1, src2, src3;
+    for (int i = 0; i < 4; i++) {
+        a = valuesA[i];
+        b = valuesB[i];
+        c = originValues[i];
+        
+        s21_from_float_to_decimal(a, &src1);
+        s21_from_float_to_decimal(b, &src2);
+        s21_from_float_to_decimal(c, &src3);
+        ck_assert_int_eq(check_before_sub(src1, src2, &src3),values[i]);    
+        }
+    
+    
+} END_TEST
+
+
 
 int main() {
     Suite *s1 = suite_create("Convertors and parsers");
@@ -823,6 +846,8 @@ int main() {
     tcase_add_test(s21_decimal_tests2,   s21_decimal_test_greather_or_equal);
     tcase_add_test(s21_decimal_tests2,   s21_decimal_test_equal_to);
     tcase_add_test(s21_decimal_tests2,   s21_decimal_test_is_not_equal_to);
+    tcase_add_test(s21_decimal_tests2,   s21_decimal_test_check_before_sub);
+
 
 
     Suite *s3 = suite_create("Arithmetic Operators");
