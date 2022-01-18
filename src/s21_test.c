@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include<stdbool.h>
-
 #include "s21_decimal.h"
 
 // MARK: - Convert functions
@@ -314,32 +313,6 @@ START_TEST(s21_decimal_test_div) {
 }
 } END_TEST
 
-START_TEST(s21_decimal_test_div1) {
-    
-    int valuesA[] = {0,88888888,-2000,2000,-1E+03};
-    int valuesB[] = {100,2,2000,-1,-1E+03};
-    int originValues[] = {0,44444444,-1,-2000,1};   // 8=====D
-    s21_decimal src1, src2;
-    int a;
-    int b;
-    int res_origin;
-    int res_our_dec;
-    for (int i = 0; i < 5;i++) {
-        res_our_dec = 0;
-        a = valuesA[i];
-        b = valuesB[i];
-        res_origin = originValues[i];
-
-
-        s21_from_int_to_decimal(a, &src1);
-        s21_from_int_to_decimal(b, &src2);
-        s21_decimal res_od = s21_div(src1, src2);
-        s21_from_decimal_to_int(res_od, &res_our_dec);
-        ck_assert_float_eq(res_our_dec, res_origin);
-    
-}
-} END_TEST
-
 /*-----------Mod-----------*/
 START_TEST(s21_decimal_test_mod) {
     
@@ -395,7 +368,7 @@ START_TEST(s21_decimal_test_negate) {
 START_TEST(s21_decimal_test_truncate) {
     
     s21_decimal src1;
-    s21_decimal result;
+     s21_decimal result;
     s21_decimal res_od;
     
     src1.value_type = s21_NORMAL_VALUE;
@@ -472,32 +445,6 @@ START_TEST(s21_decimal_test_truncate) {
     ck_assert_float_eq(res_od.bits[1], result.bits[1]);
     ck_assert_float_eq(res_od.bits[2], result.bits[2]);
     ck_assert_float_eq(res_od.bits[3], result.bits[3]);
-    
-} END_TEST
-
-START_TEST(s21_decimal_test_truncate1) { 
-    s21_decimal src1, res_od;
-    float a, b, res_our_dec;
-    float bits[4];
-    float result[4];
-    bits[3] = 1234.1234;
-    bits[2] = 0;
-    bits[1] = -1234.1234;
-    bits[0] = 9999;
-    result[3] = 1234;
-    result[2] = 0;
-    result[1] = -1234;
-    result[0] = 9999;
-
-    for (int i = 0; i < 4; i++) {
-        a = bits[i];
-        b = result[i];
-        s21_from_float_to_decimal(a, &src1);
-        res_od = s21_truncate(src1);
-        s21_from_decimal_to_float(res_od, &res_our_dec);
-        ck_assert_float_eq(res_our_dec, b);    
-        }
-    
     
 } END_TEST
 
@@ -738,7 +685,7 @@ START_TEST(s21_decimal_test_less_or_equal) {
 /*-----------Greater than-----------*/
 START_TEST(s21_decimal_test_greather) {
     
-    float valuesA[] = {11240,1,12.4124,1E+03};
+    float valuesA[] = {11241,1,12.4124,1E+03};
     float valuesB[] = {11240,0,1.6532,1E+04};
     float originValues[] = {0,0,0,1}; // 8=====D
     s21_decimal src1, src2;
@@ -846,7 +793,6 @@ int main() {
     tcase_add_test(s21_decimal_tests3, s21_decimal_test_mult3);
     tcase_add_test(s21_decimal_tests3, s21_decimal_test_mult4);
     tcase_add_test(s21_decimal_tests3, s21_decimal_test_div);
-    tcase_add_test(s21_decimal_tests3, s21_decimal_test_div1);
     tcase_add_test(s21_decimal_tests3, s21_decimal_test_mod);
     
     
@@ -857,7 +803,6 @@ int main() {
     suite_add_tcase(s4, s21_decimal_tests4);
     tcase_add_test(s21_decimal_tests4, s21_decimal_test_negate);
     tcase_add_test(s21_decimal_tests4, s21_decimal_test_truncate);
-    tcase_add_test(s21_decimal_tests4, s21_decimal_test_truncate1);
     tcase_add_test(s21_decimal_tests4, s21_decimal_test_round);
     tcase_add_test(s21_decimal_tests4, s21_decimal_test_floor);
     
