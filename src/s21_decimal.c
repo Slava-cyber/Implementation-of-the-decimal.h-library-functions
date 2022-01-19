@@ -1,7 +1,6 @@
-#include <stdio.h>
-#include <math.h>
-#include <limits.h>
+#include"s21_decimal.h"
 
+<<<<<<< HEAD
 typedef enum {
     s21_NORMAL_VALUE = 0,
     s21_INFINITY = 1,
@@ -129,11 +128,17 @@ int main() {
     return 0;
 }
 
+=======
+>>>>>>> lashlyn
 // деление целочисленное
 s21_decimal divide_int(s21_decimal decimalFirst, s21_decimal decimalSecond, s21_decimal *decimalResult) {
     s21_decimal decimalBuffer;
     init_decimal(&decimalBuffer);
     decimalBuffer.value_type = s21_NORMAL_VALUE;
+<<<<<<< HEAD
+=======
+    
+>>>>>>> lashlyn
     set_ten_power(get_ten_power(decimalFirst), &decimalBuffer);    
     for (int i = 95; i >= 0; i--) {
         shift(&decimalBuffer, 1);
@@ -162,7 +167,11 @@ s21_decimal s21_div(s21_decimal decimalFirst, s21_decimal decimalSecond) {
     if (check_before_div(decimalFirst, decimalSecond, &decimalResult)) {
         delete_bit(127, &decimalSecond);
         convert_equal_scale(&decimalFirst, &decimalSecond);
+<<<<<<< HEAD
         int scale = get_ten_power(decimalFirst);
+=======
+        get_ten_power(decimalFirst);
+>>>>>>> lashlyn
         divide_int(decimalFirst, decimalSecond, &decimalResult);
         if (sign)
             set_bit(127, &decimalResult);
@@ -178,7 +187,11 @@ s21_decimal s21_mod(s21_decimal decimalFirst, s21_decimal decimalSecond) {
         s21_decimal decimalDivision;
         delete_bit(127, &decimalSecond);
         convert_equal_scale(&decimalFirst, &decimalSecond);
+<<<<<<< HEAD
         int scale = get_ten_power(decimalFirst);
+=======
+         get_ten_power(decimalFirst);
+>>>>>>> lashlyn
         // rewrite_decimal(divide_int(decimalFirst, decimalSecond, &decimalDivision), &decimalResult);
         decimalResult = divide_int(decimalFirst, decimalSecond, &decimalDivision);
         if (sign)
@@ -210,7 +223,7 @@ int multiply(s21_decimal decimalFirst, s21_decimal decimalSecond, s21_decimal *d
 }
 // оператор *
 s21_decimal s21_mul(s21_decimal decimalFirst, s21_decimal decimalSecond) {
-    s21_decimal decimalResult, decimalCompare;
+    s21_decimal decimalResult;
     init_decimal(&decimalResult);
     int sign = (check_bit(127, decimalFirst) + check_bit(127, decimalSecond)) % 2;
     delete_bit(127, &decimalFirst);
@@ -219,12 +232,15 @@ s21_decimal s21_mul(s21_decimal decimalFirst, s21_decimal decimalSecond) {
     int scaleSecond = get_ten_power(decimalSecond);
     int scale = scaleFirst + scaleSecond;
     int inf = multiply(decimalFirst, decimalSecond, &decimalResult);
-    printf("scale:%d\n", scale);
-    printf("inf:%d\n", inf);
+
     
     if (check_before_mul(decimalFirst, decimalSecond, &decimalResult)) {
         if (!inf && scale <= 28) {
+<<<<<<< HEAD
             printf("tuta\n");
+=======
+            // printf("tuta\n");
+>>>>>>> lashlyn
             set_ten_power(scale, &decimalResult);
             if (sign)
                 set_bit(127, &decimalResult);
@@ -233,7 +249,11 @@ s21_decimal s21_mul(s21_decimal decimalFirst, s21_decimal decimalSecond) {
             s21_decimal decimalOne;
             init_decimal(&decimalOne);
             s21_from_int_to_decimal(10, &decimalOne);
+<<<<<<< HEAD
             printf("!!!\n");
+=======
+            // printf("!!!\n");
+>>>>>>> lashlyn
             while (scale > 28) {
                 divide_int(decimalResult, decimalOne, &decimalResult);
                 scale -= 1;
@@ -242,7 +262,11 @@ s21_decimal s21_mul(s21_decimal decimalFirst, s21_decimal decimalSecond) {
             decimalResult.value_type = s21_NORMAL_VALUE;
             // делим на 10 и уменьшаем скейл сравнивая с нулем
         } else if (inf && scale != 0) {
+<<<<<<< HEAD
             printf("new!\n");
+=======
+            // printf("new!\n");
+>>>>>>> lashlyn
             s21_decimal decimalOne;
             init_decimal(&decimalOne);
             s21_from_int_to_decimal(10, &decimalOne);
@@ -263,10 +287,17 @@ s21_decimal s21_mul(s21_decimal decimalFirst, s21_decimal decimalSecond) {
         } else if (inf && scale == 0) {
             init_decimal(&decimalResult);
             if (sign) {
+<<<<<<< HEAD
                 decimalResult.value_type == s21_NEGATIVE_INFINITY;
                 //printf("-inf\n");
             } else {
                 decimalResult.value_type == s21_INFINITY;   
+=======
+                decimalResult.value_type = s21_NEGATIVE_INFINITY;
+                //printf("-inf\n");
+            } else {
+                decimalResult.value_type = s21_INFINITY;   
+>>>>>>> lashlyn
                 //printf("inf\n");
             }
         }
@@ -338,6 +369,7 @@ int substraction_part(s21_decimal decimalFirst, s21_decimal decimalSecond, s21_d
         init_decimal(decimalResult);
     }
     set_ten_power(scale, decimalResult);
+    return 0;
 }
 // сложение 2 decimal
 s21_decimal s21_add(s21_decimal decimalFirst, s21_decimal decimalSecond) {
@@ -356,16 +388,16 @@ s21_decimal s21_add(s21_decimal decimalFirst, s21_decimal decimalSecond) {
         if (!signEqual) {
             scale = convert_equal_scale(&decimalFirst, &decimalSecond);
             if (decimalFirst.value_type == s21_INFINITY) {
-                printf("1\n");
+                // printf("1\n");
                 rewrite_decimal(decimalFirstBuffer, &decimalResult);
                 decimalResult.value_type = s21_NORMAL_VALUE;
             } else if (decimalSecond.value_type == s21_INFINITY) {
-                printf("2\n");
+                // printf("2\n");
                 rewrite_decimal(decimalSecondBuffer, &decimalResult);
                 decimalResult.value_type = s21_NORMAL_VALUE;
             } else {
-                printf("3\n");
-                printf("scale:%d\n", scale);
+                // printf("3\n");
+                // printf("scale:%d\n", scale);
                 set_ten_power(scale, &decimalResult);
                 inf = simple_add(decimalFirst, decimalSecond, &decimalResult);
                 if (inf) {
@@ -379,7 +411,7 @@ s21_decimal s21_add(s21_decimal decimalFirst, s21_decimal decimalSecond) {
                 set_bit(127, &decimalResult);
         } else {
             if (signFirst) {
-                printf("4\n");
+                // printf("4\n");
                 substraction_part(decimalFirst, decimalSecond, &decimalResult);
             } else {
                 substraction_part(decimalSecond, decimalFirst, &decimalResult);
@@ -430,8 +462,8 @@ int convert_equal_scale(s21_decimal *decimalFirst, s21_decimal *decimalSecond) {
     int scaleSecond = get_ten_power(*decimalSecond);
     int scale = scaleFirst;
     int inf = 0;
-    printf("scaleFirst:%d\n", scaleFirst);
-    printf("scaleSecond:%d\n", scaleSecond);
+    // printf("scaleFirst:%d\n", scaleFirst);
+    // printf("scaleSecond:%d\n", scaleSecond);
     if (scaleFirst > scaleSecond && scaleFirst <= 28) {
             /*    printf("\n");
         for (int i = 127; i >= 0; i--)
@@ -878,7 +910,7 @@ int s21_is_less(s21_decimal decimalFirst, s21_decimal decimalSecond) {
     int signFirst = check_bit(127, decimalFirst);
     int signSecond = check_bit(127, decimalSecond);
     int result = compare_board_condition(decimalFirst, decimalSecond);
-    printf("result:%d\n", result);
+    // printf("result:%d\n", result);
     if (result == -1) {
         if (signFirst > signSecond) {
             result = 0;
@@ -1010,7 +1042,11 @@ s21_decimal s21_truncate(s21_decimal decimal) {
     } else {
         s21_from_float_to_decimal(1.0, &decimalOne);
         convert_equal_scale(&decimal, &decimalOne);
+<<<<<<< HEAD
         int scale = get_ten_power(decimal);
+=======
+      get_ten_power(decimal);
+>>>>>>> lashlyn
         divide_int(decimal, decimalOne, &decimalResult);
         if (check_bit(127, decimal))
             set_bit(127, &decimalResult);
@@ -1045,7 +1081,11 @@ s21_decimal s21_round(s21_decimal decimal) {
     decimalOne.value_type = s21_NORMAL_VALUE;
     decimalHalf.value_type = s21_NORMAL_VALUE;
     decimalBuffer.value_type = s21_NORMAL_VALUE;
+<<<<<<< HEAD
     float f;
+=======
+    
+>>>>>>> lashlyn
     if (decimal.value_type != s21_NORMAL_VALUE) {
         decimalResult.value_type = decimal.value_type;
     } else {
