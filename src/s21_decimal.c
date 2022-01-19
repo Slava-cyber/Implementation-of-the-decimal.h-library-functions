@@ -1,59 +1,59 @@
 #include"s21_decimal.h"
 
-// int main() {
-//     float b = 0;
-//     //float a = 0.0003506;
-//     float d1 = 1;
-//     float d2 = 3*10e-24;
+int main() {
+    float b = 0;
+    //float a = 0.0003506;
+    float d1 = 1;
+    float d2 = 3*10e-24;
 
-//     float a1 = 3*10e-24;
-//     float a2 = 133;
-//     //printf("a1:%f\n", a1);
-//     s21_decimal decimal1, decimal2, decimal3;
-//     init_decimal(&decimal3);
-//     s21_from_float_to_decimal(a1, &decimal1);
-//     s21_from_float_to_decimal(a2, &decimal2);
-//     //set_ten_power(30, &decimal2);
-//     //        printf("decimal1\n");
-//     // for (int i = 127; i >= 0; i--)
-//     // printf("%d", check_bit(i, decimal1));
-//     // printf("\n");  
+    float a1 = 3*10e-10;
+    float a2 = 133;
+    //printf("a1:%f\n", a1);
+    s21_decimal decimal1, decimal2, decimal3;
+    init_decimal(&decimal3);
+    s21_from_float_to_decimal(a1, &decimal1);
+    s21_from_float_to_decimal(a2, &decimal2);
+    //set_ten_power(30, &decimal2);
+    //        printf("decimal1\n");
+    // for (int i = 127; i >= 0; i--)
+    // printf("%d", check_bit(i, decimal1));
+    // printf("\n");  
 
-//     // printf("decimal2\n");
-//     // for (int i = 127; i >= 0; i--)
-//     // printf("%d", check_bit(i, decimal2));
-//     // printf("\n");
-//         printf("|||||decimal1\n");
-//     for (int i = 127; i >= 0; i--)
-//     printf("%d", check_bit(i, decimal1));
-//     printf("\n");  
+    // printf("decimal2\n");
+    // for (int i = 127; i >= 0; i--)
+    // printf("%d", check_bit(i, decimal2));
+    // printf("\n");
+        printf("|||||decimal1\n");
+    for (int i = 127; i >= 0; i--)
+    printf("%d", check_bit(i, decimal1));
+    printf("\n");  
 
-//     s21_from_decimal_to_float(decimal1, &b);
-//         printf("b:%.27f\n",b);
-//     decimal3 = s21_div(decimal2, decimal1);
-//         printf("|||||decimal1\n");
-//     for (int i = 127; i >= 0; i--)
-//     printf("%d", check_bit(i, decimal1));
-//     printf("\n");  
+    s21_from_decimal_to_float(decimal1, &b);
+        printf("b:%.27f\n",b);
+    decimal3 = s21_div(decimal2, decimal1);
+        printf("|||||decimal1\n");
+    for (int i = 127; i >= 0; i--)
+    printf("%d", check_bit(i, decimal1));
+    printf("\n");  
 
-//     printf("decimal2\n");
-//     for (int i = 127; i >= 0; i--)
-//     printf("%d", check_bit(i, decimal2));
-//     printf("\n");
+    printf("decimal2\n");
+    for (int i = 127; i >= 0; i--)
+    printf("%d", check_bit(i, decimal2));
+    printf("\n");
 
-//     printf("decimal3\n");
-//     for (int i = 127; i >= 0; i--)
-//     printf("%d", check_bit(i, decimal3));
-//     printf("\n");  
+    printf("decimal3\n");
+    for (int i = 127; i >= 0; i--)
+    printf("%d", check_bit(i, decimal3));
+    printf("\n");  
 
-//     //printf("less:%d\n", s21_is_greater_or_equal(decimal2, decimal1));
-//     //decimal2 = s21_round(decimal2);
-//     s21_from_decimal_to_float(decimal3, &b);
-//     if (decimal3.value_type == s21_NORMAL_VALUE)
-//         printf("b:%.15f\n",b);
-//     printf("bas:%f\n", a2 / a1 );
-//     return 0;
-// }
+    //printf("less:%d\n", s21_is_greater_or_equal(decimal2, decimal1));
+    //decimal2 = s21_round(decimal2);
+    s21_from_decimal_to_float(decimal3, &b);
+    if (decimal3.value_type == s21_NORMAL_VALUE)
+        printf("b:%.15f\n",b);
+    printf("bas:%f\n", a2 / a1 );
+    return 0;
+}
 
 // деление целочисленное
 s21_decimal divide_int(s21_decimal decimalFirst, s21_decimal decimalSecond, s21_decimal *decimalResult) {
@@ -80,7 +80,7 @@ s21_decimal divide_int(s21_decimal decimalFirst, s21_decimal decimalSecond, s21_
     set_ten_power(0, decimalResult);
     return decimalBuffer;
 }
-
+// формирование дробной части при делении
 int divide_fractional(s21_decimal decimalRemainder, s21_decimal decimalSecond, s21_decimal *decimalResult) {
     s21_decimal decimalBuffer;
     init_decimal(&decimalBuffer);
@@ -180,7 +180,7 @@ int divide_fractional(s21_decimal decimalRemainder, s21_decimal decimalSecond, s
     set_ten_power(scale, decimalResult);
     return 1;
 }
-
+// оператор /
 s21_decimal s21_div(s21_decimal decimalFirst, s21_decimal decimalSecond) {
     s21_decimal decimalOne;
     init_decimal(&decimalOne);
@@ -192,41 +192,39 @@ s21_decimal s21_div(s21_decimal decimalFirst, s21_decimal decimalSecond) {
     decimalResult.value_type = s21_NORMAL_VALUE;
 
     if (check_before_div(decimalFirst, decimalSecond, &decimalResult)) {
-    //     printf("ggggg\n");
-    //     if (!s21_is_less(decimalSecond, decimalOne)) {
-    //         printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
-    //         int scale = get_ten_power(decimalSecond);
-    //         set_ten_power(0, &decimalSecond);
-    //         decimalResult = div_algoritm(decimalFirst, decimalSecond);
-    //         printf("scaleResult:%d\n", get_ten_power(decimalResult));
-    //         s21_decimal decimalScale;
-    //         init_decimal(&decimalScale);
-    //         decimalScale.value_type = s21_NORMAL_VALUE;
-    //         s21_from_int_to_decimal(10, &decimalScale);
-    //         printf("scale:%d\n", scale);
-    //         for (int i = 1; i < scale; i++)
-    //             multiply_ten(decimalScale, &decimalScale);
-
-    //             printf("decimalScale\n");
-    // for (int i = 127; i >= 0; i--)
-    // printf("%d", check_bit(i, decimalScale));
-    // printf("\n");
-
-
-    //             printf("decimalResult\n");
-    // for (int i = 127; i >= 0; i--)
-    // printf("%d", check_bit(i, decimalResult));
-    // printf("\n");
-
-    //         decimalResult = s21_mul(decimalResult, decimalScale);
-    //     } else {
+        printf("ggggg\n");
+        if (!s21_is_less(decimalSecond, decimalOne)) {
+            printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+            int scale = get_ten_power(decimalSecond);
+            set_ten_power(0, &decimalSecond);
             decimalResult = div_algoritm(decimalFirst, decimalSecond);
-      //}
+            printf("scaleResult:%d\n", get_ten_power(decimalResult));
+            s21_decimal decimalScale;
+            init_decimal(&decimalScale);
+            decimalScale.value_type = s21_NORMAL_VALUE;
+            s21_from_int_to_decimal(10, &decimalScale);
+            printf("scale:%d\n", scale);
+            for (int i = 1; i < scale; i++)
+                multiply_ten(decimalScale, &decimalScale);
+
+                printf("decimalScale\n");
+    for (int i = 127; i >= 0; i--)
+    printf("%d", check_bit(i, decimalScale));
+    printf("\n");
+
+
+                printf("decimalResult\n");
+    for (int i = 127; i >= 0; i--)
+    printf("%d", check_bit(i, decimalResult));
+    printf("\n");
+
+            decimalResult = s21_mul(decimalResult, decimalScale);
+        } else {
+            decimalResult = div_algoritm(decimalFirst, decimalSecond);
+      }
     }
     return decimalResult;
 }
-
-
 // оператор /
 s21_decimal div_algoritm(s21_decimal decimalFirst, s21_decimal decimalSecond) {
     s21_decimal decimalZero;
@@ -337,11 +335,11 @@ s21_decimal s21_mul(s21_decimal decimalFirst, s21_decimal decimalSecond) {
             init_decimal(&decimalOne);
             s21_from_int_to_decimal(10, &decimalOne);
             while (inf && scale != 0) {
-                decimalSecondBuffer = decimalSecond;
-                decimalFirstBuffer = decimalFirst;
-                set_ten_power(0, &decimalSecondBuffer);
-                set_ten_power(0, &decimalFirstBuffer);
-                if (!s21_is_greater(decimalFirstBuffer, decimalSecondBuffer)) {
+                // decimalSecondBuffer = decimalSecond;
+                // decimalFirstBuffer = decimalFirst;
+                // set_ten_power(0, &decimalSecondBuffer);
+                // set_ten_power(0, &decimalFirstBuffer);
+                if (!s21_is_greater(decimalFirst, decimalSecond)) {
                     set_ten_power(0, &decimalFirst);
                     divide_int(decimalFirst, decimalOne, &decimalFirst);
                     if (scaleFirst) {

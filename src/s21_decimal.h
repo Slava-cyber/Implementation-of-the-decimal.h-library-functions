@@ -59,6 +59,7 @@ int subtraction(s21_decimal decimalFirst, s21_decimal decimalSecond, s21_decimal
 int substraction_part(s21_decimal decimalFirst, s21_decimal decimalSecond, s21_decimal *decimalResult);
 int multiply(s21_decimal decimalFirst, s21_decimal decimalSecond, s21_decimal *decimalResult);
 s21_decimal divide_int(s21_decimal decimalFirst, s21_decimal decimalSecond, s21_decimal *decimalResult);
+s21_decimal div_algoritm(s21_decimal decimalFirst, s21_decimal decimalSecond);
 
 // операции над decimal проверка граничных условий
 int check_before_add(s21_decimal first, s21_decimal second, s21_decimal *result);
