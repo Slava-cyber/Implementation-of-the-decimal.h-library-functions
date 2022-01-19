@@ -5,6 +5,7 @@ s21_decimal divide_int(s21_decimal decimalFirst, s21_decimal decimalSecond, s21_
     s21_decimal decimalBuffer;
     init_decimal(&decimalBuffer);
     decimalBuffer.value_type = s21_NORMAL_VALUE;
+    
     set_ten_power(get_ten_power(decimalFirst), &decimalBuffer);    
     for (int i = 95; i >= 0; i--) {
         shift(&decimalBuffer, 1);
