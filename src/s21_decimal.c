@@ -1,12 +1,68 @@
 #include"s21_decimal.h"
 
+// int main() {
+//     float b = 0;
+//     //float a = 0.0003506;
+//     float d1 = 1;
+//     float d2 = 3*10e-24;
+
+//     float a1 = 3*10e-24;
+//     float a2 = 133;
+//     //printf("a1:%f\n", a1);
+//     s21_decimal decimal1, decimal2, decimal3;
+//     init_decimal(&decimal3);
+//     s21_from_float_to_decimal(a1, &decimal1);
+//     s21_from_float_to_decimal(a2, &decimal2);
+//     //set_ten_power(30, &decimal2);
+//     //        printf("decimal1\n");
+//     // for (int i = 127; i >= 0; i--)
+//     // printf("%d", check_bit(i, decimal1));
+//     // printf("\n");  
+
+//     // printf("decimal2\n");
+//     // for (int i = 127; i >= 0; i--)
+//     // printf("%d", check_bit(i, decimal2));
+//     // printf("\n");
+//         printf("|||||decimal1\n");
+//     for (int i = 127; i >= 0; i--)
+//     printf("%d", check_bit(i, decimal1));
+//     printf("\n");  
+
+//     s21_from_decimal_to_float(decimal1, &b);
+//         printf("b:%.27f\n",b);
+//     decimal3 = s21_div(decimal2, decimal1);
+//         printf("|||||decimal1\n");
+//     for (int i = 127; i >= 0; i--)
+//     printf("%d", check_bit(i, decimal1));
+//     printf("\n");  
+
+//     printf("decimal2\n");
+//     for (int i = 127; i >= 0; i--)
+//     printf("%d", check_bit(i, decimal2));
+//     printf("\n");
+
+//     printf("decimal3\n");
+//     for (int i = 127; i >= 0; i--)
+//     printf("%d", check_bit(i, decimal3));
+//     printf("\n");  
+
+//     //printf("less:%d\n", s21_is_greater_or_equal(decimal2, decimal1));
+//     //decimal2 = s21_round(decimal2);
+//     s21_from_decimal_to_float(decimal3, &b);
+//     if (decimal3.value_type == s21_NORMAL_VALUE)
+//         printf("b:%.15f\n",b);
+//     printf("bas:%f\n", a2 / a1 );
+//     return 0;
+// }
+
 // деление целочисленное
 s21_decimal divide_int(s21_decimal decimalFirst, s21_decimal decimalSecond, s21_decimal *decimalResult) {
     s21_decimal decimalBuffer;
     init_decimal(&decimalBuffer);
     decimalBuffer.value_type = s21_NORMAL_VALUE;
     
-    set_ten_power(get_ten_power(decimalFirst), &decimalBuffer);    
+    set_ten_power(get_ten_power(decimalFirst), &decimalBuffer);   
+
     for (int i = 95; i >= 0; i--) {
         shift(&decimalBuffer, 1);
         if (check_bit(i, decimalFirst)) {
@@ -25,20 +81,176 @@ s21_decimal divide_int(s21_decimal decimalFirst, s21_decimal decimalSecond, s21_
     return decimalBuffer;
 }
 
-// оператор /
+int divide_fractional(s21_decimal decimalRemainder, s21_decimal decimalSecond, s21_decimal *decimalResult) {
+    s21_decimal decimalBuffer;
+    init_decimal(&decimalBuffer);
+    decimalBuffer.value_type = s21_NORMAL_VALUE;
+
+    s21_decimal decimalBuffer2;
+    init_decimal(&decimalBuffer2);
+    decimalBuffer2.value_type = s21_NORMAL_VALUE;
+
+    s21_decimal decimalTen;
+    init_decimal(&decimalTen);
+    decimalTen.value_type = s21_NORMAL_VALUE;
+    s21_from_int_to_decimal(10, &decimalTen);
+
+
+    s21_decimal decimalZero;
+    init_decimal(&decimalZero);
+    decimalZero.value_type = s21_NORMAL_VALUE;
+    s21_from_int_to_decimal(0, &decimalZero);
+
+                printf("decimalTen\n");
+    for (int i = 127; i >= 0; i--)
+    printf("%d", check_bit(i, decimalTen));
+    printf("\n");
+            printf("decimalSecond\n");
+
+           printf("decimalRemainder\n");
+    for (int i = 127; i >= 0; i--)
+    printf("%d", check_bit(i, decimalRemainder));
+    printf("\n");
+            printf("decimalSecond\n");
+    for (int i = 127; i >= 0; i--)
+    printf("%d", check_bit(i, decimalSecond));
+    printf("\n");
+                printf("decimalResult\n");
+    for (int i = 127; i >= 0; i--)
+    printf("%d", check_bit(i, *decimalResult));
+    printf("\n");
+
+    int scale = get_ten_power(*decimalResult);
+    int inf;
+    while (scale <= 28 && !s21_is_not_equal(decimalZero, decimalRemainder)) {
+        //init_decimal(&decimalBuffer);
+        decimalRemainder = s21_mul(decimalTen, decimalRemainder);
+        decimalBuffer = *decimalResult;
+        inf = multiply_ten(*decimalResult, &decimalBuffer);
+        
+        if (!inf) {
+            //multiply(*decimalResult, decimalTen, decimalResult);
+            multiply_ten(*decimalResult, decimalResult);
+            scale += 1;
+        } else {
+            break;
+        }
+
+
+                printf("decimalBufferbefore\n");
+    for (int i = 127; i >= 0; i--)
+    printf("%d", check_bit(i, decimalBuffer));
+    printf("\n");
+
+    //         printf("decimalRemainder\n");
+    // for (int i = 127; i >= 0; i--)
+    // printf("%d", check_bit(i, decimalRemainder));
+    // printf("\n");
+
+        if (!s21_is_greater_or_equal(decimalRemainder, decimalSecond)) {
+            printf("gg\n");
+            decimalRemainder = divide_int(decimalRemainder, decimalSecond, &decimalBuffer);
+            inf = simple_add(decimalBuffer, *decimalResult, &decimalBuffer2);
+
+            if (!inf) {
+                simple_add(decimalBuffer, *decimalResult, decimalResult);
+            } else {
+                break;
+            }
+
+            printf("decimalBuffer\n");
+    for (int i = 127; i >= 0; i--)
+    printf("%d", check_bit(i, decimalBuffer));
+    printf("\n");
+
+
+            printf("decimalRemainder\n");
+    for (int i = 127; i >= 0; i--)
+    printf("%d", check_bit(i, decimalRemainder));
+    printf("\n");
+
+
+                printf("decimalResult\n");
+    for (int i = 127; i >= 0; i--)
+    printf("%d", check_bit(i, *decimalResult));
+    printf("\n");
+
+        }
+    }
+    set_ten_power(scale, decimalResult);
+    return 1;
+}
+
 s21_decimal s21_div(s21_decimal decimalFirst, s21_decimal decimalSecond) {
+    s21_decimal decimalOne;
+    init_decimal(&decimalOne);
+    decimalOne.value_type = s21_NORMAL_VALUE;
+    s21_from_int_to_decimal(1, &decimalOne);
+
     s21_decimal decimalResult;
     init_decimal(&decimalResult);
     decimalResult.value_type = s21_NORMAL_VALUE;
-    int sign = (check_bit(127, decimalFirst) + check_bit(127, decimalSecond)) % 2;
+
     if (check_before_div(decimalFirst, decimalSecond, &decimalResult)) {
+    //     printf("ggggg\n");
+    //     if (!s21_is_less(decimalSecond, decimalOne)) {
+    //         printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+    //         int scale = get_ten_power(decimalSecond);
+    //         set_ten_power(0, &decimalSecond);
+    //         decimalResult = div_algoritm(decimalFirst, decimalSecond);
+    //         printf("scaleResult:%d\n", get_ten_power(decimalResult));
+    //         s21_decimal decimalScale;
+    //         init_decimal(&decimalScale);
+    //         decimalScale.value_type = s21_NORMAL_VALUE;
+    //         s21_from_int_to_decimal(10, &decimalScale);
+    //         printf("scale:%d\n", scale);
+    //         for (int i = 1; i < scale; i++)
+    //             multiply_ten(decimalScale, &decimalScale);
+
+    //             printf("decimalScale\n");
+    // for (int i = 127; i >= 0; i--)
+    // printf("%d", check_bit(i, decimalScale));
+    // printf("\n");
+
+
+    //             printf("decimalResult\n");
+    // for (int i = 127; i >= 0; i--)
+    // printf("%d", check_bit(i, decimalResult));
+    // printf("\n");
+
+    //         decimalResult = s21_mul(decimalResult, decimalScale);
+    //     } else {
+            decimalResult = div_algoritm(decimalFirst, decimalSecond);
+      //}
+    }
+    return decimalResult;
+}
+
+
+// оператор /
+s21_decimal div_algoritm(s21_decimal decimalFirst, s21_decimal decimalSecond) {
+    s21_decimal decimalZero;
+    init_decimal(&decimalZero);
+    decimalZero.value_type = s21_NORMAL_VALUE;
+    s21_from_int_to_decimal(0, &decimalZero);
+
+    s21_decimal decimalResult;
+    init_decimal(&decimalResult);
+    decimalResult.value_type = s21_NORMAL_VALUE;
+    
+    s21_decimal decimalRemainder;
+    init_decimal(&decimalRemainder);
+    decimalRemainder.value_type = s21_NORMAL_VALUE;
+
+    int sign = (check_bit(127, decimalFirst) + check_bit(127, decimalSecond)) % 2;
         delete_bit(127, &decimalSecond);
         convert_equal_scale(&decimalFirst, &decimalSecond);
         get_ten_power(decimalFirst);
-        divide_int(decimalFirst, decimalSecond, &decimalResult);
+        decimalRemainder = divide_int(decimalFirst, decimalSecond, &decimalResult);
+        if (!s21_is_not_equal(decimalRemainder, decimalZero))
+            divide_fractional(decimalRemainder, decimalSecond, &decimalResult);
         if (sign)
             set_bit(127, &decimalResult);
-    }
     return decimalResult;
 }
 // оператор mod
@@ -82,8 +294,15 @@ int multiply(s21_decimal decimalFirst, s21_decimal decimalSecond, s21_decimal *d
 }
 // оператор *
 s21_decimal s21_mul(s21_decimal decimalFirst, s21_decimal decimalSecond) {
+            s21_decimal decimalFirstBuffer;
+    init_decimal(&decimalFirstBuffer);
+        s21_decimal decimalSecondBuffer;
+    init_decimal(&decimalSecondBuffer);
+        decimalFirstBuffer.value_type = s21_NORMAL_VALUE;
+            decimalSecondBuffer.value_type = s21_NORMAL_VALUE;
     s21_decimal decimalResult;
     init_decimal(&decimalResult);
+    decimalResult.value_type = s21_NORMAL_VALUE;
     int sign = (check_bit(127, decimalFirst) + check_bit(127, decimalSecond)) % 2;
     delete_bit(127, &decimalFirst);
     delete_bit(127, &decimalSecond);
@@ -113,21 +332,55 @@ s21_decimal s21_mul(s21_decimal decimalFirst, s21_decimal decimalSecond) {
             decimalResult.value_type = s21_NORMAL_VALUE;
             // делим на 10 и уменьшаем скейл сравнивая с нулем
         } else if (inf && scale != 0) {
-            // printf("new!\n");
+             printf("new!\n");
             s21_decimal decimalOne;
             init_decimal(&decimalOne);
             s21_from_int_to_decimal(10, &decimalOne);
-            while (inf || scale != 0) {
-                if (!s21_is_greater(decimalFirst, decimalSecond))
+            while (inf && scale != 0) {
+                decimalSecondBuffer = decimalSecond;
+                decimalFirstBuffer = decimalFirst;
+                set_ten_power(0, &decimalSecondBuffer);
+                set_ten_power(0, &decimalFirstBuffer);
+                if (!s21_is_greater(decimalFirstBuffer, decimalSecondBuffer)) {
+                    set_ten_power(0, &decimalFirst);
                     divide_int(decimalFirst, decimalOne, &decimalFirst);
-                else
+                    if (scaleFirst) {
+                        scaleFirst -= 1;
+                        set_ten_power(scaleFirst-1, &decimalFirst);
+                    }
+                } else {
+                    set_ten_power(0, &decimalSecond);
                     divide_int(decimalSecond, decimalOne, &decimalSecond);
-                scale -= 1;
+                    if (scaleSecond) {
+                        scaleSecond -= 1;
+                        set_ten_power(scaleSecond-1, &decimalSecond);
+                    }
+                }
                 init_decimal(&decimalResult);
                 decimalResult.value_type = s21_NORMAL_VALUE;
                 inf = multiply(decimalFirst, decimalSecond, &decimalResult);
+                scale -= 1;
                 set_ten_power(scale, &decimalResult);
+                 printf("scaleFirst:%d\n", scaleFirst);
+                 
+                 printf("scale:%d\n", scale);
+                printf("decimalResult\n");
+    for (int i = 127; i >= 0; i--)
+    printf("%d", check_bit(i, decimalResult));
+    printf("\n");
+
+                printf("decimalFirst\n");
+    for (int i = 127; i >= 0; i--)
+    printf("%d", check_bit(i, decimalFirst));
+    printf("\n");
+
+                printf("decimalSecond\n");
+    for (int i = 127; i >= 0; i--)
+    printf("%d", check_bit(i, decimalSecond));
+    printf("\n");
+
             }
+            printf("scale:%d\n", scale);
             // сравниваем числа
             // большее делим на 10 понижая суммарный скейл на 10
             // снова пытаемся умножить
@@ -394,26 +647,33 @@ int s21_from_decimal_to_float(s21_decimal src, float *dst) {
 }
 // перевод float в decimal
 int s21_from_float_to_decimal(float src, s21_decimal *dst) {
+    printf("src:%f\n", src);
     int codeError = 0, tenPower = 0;
     value val;
     int binaryPower;
     double number = (double) src;
-    //printf("number:%f\n", number);
+    // printf("number1:%f\n", number);
+    printf("number:%f\n", number);
     check_value_number_float(number, dst);
     init_decimal(dst);
     val.floatValue = number;
     binaryPower = get_binary_power(val);
     if (dst->value_type == s21_NORMAL_VALUE && dst) {
-        //printf("number:%f\n", number);
+        printf("number:%f\n", number);
+                                printf("number1:%f\n", number);
         if (number != 0.0) {
-            for (; !(int)(number / 1E7); number *= 10)
+            for (; !(int)(number / 1E6); number *= 10)
                 tenPower += 1;
+            number = (int)number;
+            number = (float) number;
+                        //printf("number:%f\n", number);
+            while (fmod(number, 10.0) == 0 && tenPower > 0) {
+                number = number / 10;
+                tenPower -= 1;
+            }
+             printf("number:%f\n", number);
+            printf("tenPower:%d\n", tenPower);
             if (tenPower <= 28 && (binaryPower > -95 && binaryPower <=95)) {
-                number = (float) number;
-                while (fmod(number, 10.0) == 0 && tenPower > 0) {
-                    number = number / 10;
-                    tenPower -= 1;
-                }
                 //printf("number:%f\n", number);
                 val.floatValue = number;
                 binaryPower = get_binary_power(val);
