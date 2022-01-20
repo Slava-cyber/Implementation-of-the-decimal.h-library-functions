@@ -6,8 +6,8 @@ int main() {
     float d1 = 1;
     float d2 = 3*10e-24;
 
-    float a1 = 3*10e-10;
-    float a2 = 133;
+    float a1 = -0.2332;
+    float a2 = -111;
     //printf("a1:%f\n", a1);
     s21_decimal decimal1, decimal2, decimal3;
     init_decimal(&decimal3);
@@ -30,6 +30,7 @@ int main() {
 
     s21_from_decimal_to_float(decimal1, &b);
         printf("b:%.27f\n",b);
+      printf("a:%.27f\n",a1);
     decimal3 = s21_div(decimal2, decimal1);
         printf("|||||decimal1\n");
     for (int i = 127; i >= 0; i--)
@@ -190,8 +191,12 @@ s21_decimal s21_div(s21_decimal decimalFirst, s21_decimal decimalSecond) {
     s21_decimal decimalResult;
     init_decimal(&decimalResult);
     decimalResult.value_type = s21_NORMAL_VALUE;
+    
 
     if (check_before_div(decimalFirst, decimalSecond, &decimalResult)) {
+        int sign = (check_bit(127, decimalFirst) + check_bit(127, decimalSecond)) % 2;
+        delete_bit(127, &decimalFirst);
+        delete_bit(127, &decimalSecond);
         printf("ggggg\n");
         if (!s21_is_less(decimalSecond, decimalOne)) {
             printf("!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
@@ -222,6 +227,8 @@ s21_decimal s21_div(s21_decimal decimalFirst, s21_decimal decimalSecond) {
         } else {
             decimalResult = div_algoritm(decimalFirst, decimalSecond);
       }
+              if (sign)
+            set_bit(127, &decimalResult);
     }
     return decimalResult;
 }
@@ -240,15 +247,15 @@ s21_decimal div_algoritm(s21_decimal decimalFirst, s21_decimal decimalSecond) {
     init_decimal(&decimalRemainder);
     decimalRemainder.value_type = s21_NORMAL_VALUE;
 
-    int sign = (check_bit(127, decimalFirst) + check_bit(127, decimalSecond)) % 2;
+    //int sign = (check_bit(127, decimalFirst) + check_bit(127, decimalSecond)) % 2;
         delete_bit(127, &decimalSecond);
         convert_equal_scale(&decimalFirst, &decimalSecond);
         get_ten_power(decimalFirst);
         decimalRemainder = divide_int(decimalFirst, decimalSecond, &decimalResult);
         if (!s21_is_not_equal(decimalRemainder, decimalZero))
             divide_fractional(decimalRemainder, decimalSecond, &decimalResult);
-        if (sign)
-            set_bit(127, &decimalResult);
+        // if (sign)
+        //     set_bit(127, &decimalResult);
     return decimalResult;
 }
 // оператор mod
@@ -662,7 +669,6 @@ int s21_from_float_to_decimal(float src, s21_decimal *dst) {
         if (number != 0.0) {
             for (; !(int)(number / 1E6); number *= 10)
                 tenPower += 1;
-            number = (int)number;
             number = (float) number;
                         //printf("number:%f\n", number);
             while (fmod(number, 10.0) == 0 && tenPower > 0) {
