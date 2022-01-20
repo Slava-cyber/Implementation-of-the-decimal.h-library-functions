@@ -48,7 +48,6 @@ s21_decimal.a: s21_decimal.o
 	ranlib s21_decimal.a
 
 check:
-	cppcheck --enable=all --suppress=missingIncludeSystem *.c *.h
 	cp ../materials/linters/CPPLINT.cfg CPPLINT.cfg
 	python3 ../materials/linters/cpplint.py --extension=c *.c
 	CK_FORK=no leaks --atExit -- ./Test
