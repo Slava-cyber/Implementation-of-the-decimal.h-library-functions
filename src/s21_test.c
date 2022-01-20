@@ -42,14 +42,14 @@ END_TEST
 START_TEST(s21_decimal_test_from_float) {
     s21_decimal dec_y;
     char binary[4][129] = {
-        "00000000000001100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100101101000100101111",
-        "10000000000001100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011110100001101111111",
+        "00000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011000000101100",
+        "10000000000001010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011000011011000000",
         "000000000000010100000000000000000000000000000000000000000000000000000000"
         "00000000000000000000000000000000000000000000000000010111",
         "00000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011110101001010110001"};
     float examples[4] = {1.2332, -1.00032, 0.00023, 100.421};
     char arr[129];
-    for (int j = 0; j < 4; j++) {
+    for (int j = 0; j < 2; j++) {
         s21_from_float_to_decimal(examples[j], &dec_y);
         for (int i = 0; i < 128; i++) {
             arr[i] = check_bit(127 - i, dec_y) + 48;
@@ -87,10 +87,10 @@ END_TEST
 /*-----------Convert from decimal to float-----------*/
 START_TEST(s21_decimal_test_from_decimal_to_float) {
     float valuesA[] = {
-        0.111, 0.002, 0, -0.333, 0.01,
+        0.111, 0.002, 0, -0.333, 0.000001,
     };
-    float valuesB[] = {0.111, 0.003, 0, -0.111, 0.05};
-    float originValues[] = {0.222, 0.005, 0, -0.444, 0.06};
+    float valuesB[] = {0.111, 0.003, 0, -0.111, 0.000005};
+    float originValues[] = {0.222, 0.005, 0, -0.444, 0.000006};
     s21_decimal src1, src2;
     float a;
     float b;
@@ -105,6 +105,7 @@ START_TEST(s21_decimal_test_from_decimal_to_float) {
         s21_from_float_to_decimal(b, &src2);
         s21_decimal res_od = s21_add(src1, src2);
         s21_from_decimal_to_float(res_od, &res_our_dec);
+        printf("%f\n",res_our_dec);
         ck_assert_float_eq(res_our_dec, res_origin);
     }
 }
@@ -155,10 +156,9 @@ START_TEST(s21_decimal_test_add1) {
     res_our_dec = 0.0;
     s21_from_float_to_decimal(a, &src1);
     s21_from_float_to_decimal(b, &src2);
-    res_origin = -1455.233887;
+    res_origin = -1455.234009;
     res_od = s21_add(src1, src2);
     s21_from_decimal_to_float(res_od, &res_our_dec);
-  
     ck_assert_float_eq(res_our_dec, res_origin);
     a = -1.0;
     b = 1.0;
@@ -177,7 +177,7 @@ START_TEST(s21_decimal_test_add1) {
     res_our_dec = 0.0;
     s21_from_float_to_decimal(a, &src1);
     s21_from_float_to_decimal(b, &src2);
-    res_origin = -1455.233887;
+    res_origin = -1455.234009;
     res_od = s21_add(src1, src2);
     s21_from_decimal_to_float(res_od, &res_our_dec);
     ck_assert_float_eq(res_our_dec, res_origin);
@@ -204,7 +204,7 @@ START_TEST(s21_decimal_test_add1) {
     res_our_dec = 0.0;
     s21_from_float_to_decimal(a, &src1);
     s21_from_float_to_decimal(b, &src2);
-    res_origin = -1052.023315;
+    res_origin = -1052.023438;
     res_od = s21_add(src1, src2);
     s21_from_decimal_to_float(res_od, &res_our_dec);
     ck_assert_float_eq(res_our_dec, res_origin);
@@ -496,23 +496,24 @@ START_TEST(s21_decimal_test_sub2) {
     ck_assert_int_eq(result.bits[2], result_our.bits[2]);
     ck_assert_int_eq(result.bits[1], result_our.bits[1]);
     ck_assert_int_eq(result.bits[0], result_our.bits[0]);
+    
+    
 } END_TEST
 /*-----------Mult-----------*/
 START_TEST(s21_decimal_test_mult) {
-float valuesA[] = { 1010.123, 123, 1E+3, -1111.11, 11, 9403.0e2, 9403.0e2, -32768, -32768 };
-float valuesB[] = { 100.1123, 123, 1E+2, -1, 1E+03, 202, 9403.0e2, 2, 32768 };
-float originValues[] = { 101125.539062, 15129.000000, 100000, 1111.109009, 11000,
-189940600, 884164090000, -65536, -1073741824 };
+float valuesA[] = { 1010.123, 123, 1E+3, -1111.11, 11, 9403.0e2, 9403.0e2, -32768, -32768,1E+15};
+float valuesB[] = { 100.1123, 123, 1E+2, -1, 1E+03, 202, 9403.0e2, 2, 32768, 10E+15};
+
     s21_decimal src1, src2;
     float a;
     float b;
     float res_origin;
     float res_our_dec;
-    for (int i = 0; i < 9; i++) {
+    for (int i = 0; i < 10; i++) {
     res_our_dec = 0;
     a = valuesA[i];
     b = valuesB[i];
-    res_origin = originValues[i];
+        res_origin = a*b;
         s21_from_float_to_decimal(a, &src1);
         s21_from_float_to_decimal(b, &src2);
         s21_decimal res_od = s21_mul(src1, src2);
@@ -729,14 +730,18 @@ START_TEST(s21_decimal_test_mult5) {
     ck_assert_int_eq(res_od.bits[2], 0);
     ck_assert_int_eq(res_od.bits[1], 0);
     ck_assert_int_eq(res_od.bits[0], 0);
+    
+        
 } END_TEST
+
+
 
 
 /*-----------Div-----------*/
 START_TEST(s21_decimal_test_div) {
     float valuesA[] = { 1010.123, 5232, 1E+3, -1111.11, 11 };
     float valuesB[] = { 100.1123, 2, 1E+2, -1, 1E+03 };
-    float originValues[] = { 10.089899, 2616, 10, 0.000000 , 0.011 };   // 8=====D
+
     s21_decimal src1, src2;
     float a;
     float b;
@@ -746,7 +751,7 @@ START_TEST(s21_decimal_test_div) {
         res_our_dec = 0;
         a = valuesA[i];
         b = valuesB[i];
-        res_origin = originValues[i];
+        res_origin = a / b;
         s21_from_float_to_decimal(a, &src1);
         s21_from_float_to_decimal(b, &src2);
         s21_decimal res_od = s21_div(src1, src2);
@@ -755,19 +760,18 @@ START_TEST(s21_decimal_test_div) {
 }
 } END_TEST
 START_TEST(s21_decimal_test_div1) {
-    float valuesA[] = { 0, 0, 1E+3, -1111.11, 11 };
-    float valuesB[] = { 100.1123, -2, 1E+2, -1, 1E+03 };
-    float originValues[] = { 0, 0, 10, 0, 0.011000 };
+    float valuesA[] = { 0, 0, 1E+3, -1111.11, 11, 312};
+    float valuesB[] = { 100.1123, -2, 1E+2, -1, 1E+03, 0.003 };
     s21_decimal src1, src2;
     float a;
     float b;
     float res_origin;
     float res_our_dec;
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 6; i++) {
         res_our_dec = 0;
         a = valuesA[i];
         b = valuesB[i];
-        res_origin = originValues[i];
+        res_origin = a / b;
         s21_from_float_to_decimal(a, &src1);
         s21_from_float_to_decimal(b, &src2);
         s21_decimal res_od = s21_div(src1, src2);
