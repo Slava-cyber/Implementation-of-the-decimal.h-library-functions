@@ -42,11 +42,15 @@ END_TEST
 START_TEST(s21_decimal_test_from_float) {
     s21_decimal dec_y;
     char binary[4][129] = {
-        "00000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011000000101100",
-        "10000000000001010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011000011011000000",
-        "000000000000010100000000000000000000000000000000000000000000000000000000"
-        "00000000000000000000000000000000000000000000000000010111",
-        "00000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011110101001010110001"};
+"00000000000001000000000000000000000000000000000000000"
+"000000000000000000000000000000000000000000000000000000000000011000000101100",
+"10000000000001010000000000000000000000000000000000000"
+"000000000000000000000000000000000000000000000000000000000011000011011000000",
+"000000000000010100000000000000000000000000000000000000"
+"000000000000000000"
+"00000000000000000000000000000000000000000000000000010111",
+"000000000000010000000000000000000000000000000000000000000"
+"00000000000000000000000000000000000000000000000000011110101001010110001"};
     float examples[4] = {1.2332, -1.00032, 0.00023, 100.421};
     char arr[129];
     for (int j = 0; j < 2; j++) {
@@ -577,43 +581,36 @@ START_TEST(s21_decimal_test_sub2) {
     ck_assert_int_eq(result.bits[2], result_our.bits[2]);
     ck_assert_int_eq(result.bits[1], result_our.bits[1]);
     ck_assert_int_eq(result.bits[0], result_our.bits[0]);
-    
     float value;
-    s21_decimal dec3,dec4,dec5;
+    s21_decimal dec3, dec4, dec5;
     init_decimal(&dec3);
     init_decimal(&dec4);
     dec3.value_type = s21_NAN;
     dec4.value_type = s21_NAN;
-    dec5 = s21_sub(dec3,dec4);
-  
-    s21_from_decimal_to_float(dec5,&value);
-    
+    dec5 = s21_sub(dec3, dec4);
+    s21_from_decimal_to_float(dec5, &value);
     if (dec5.value_type == 3) {
     ck_assert_int_eq(dec5.value_type, 3);
     }
-    
     dec4.value_type = s21_NORMAL_VALUE;
     dec3.value_type = s21_INFINITY;
-    dec5 = s21_sub(dec3,dec4);
+    dec5 = s21_sub(dec3, dec4);
     ck_assert_int_eq(dec5.value_type, 1);
 
     dec4.value_type = s21_NEGATIVE_INFINITY;
     dec3.value_type = s21_INFINITY;
-    dec5 = s21_sub(dec3,dec4);
+    dec5 = s21_sub(dec3, dec4);
     ck_assert_int_eq(dec5.value_type, 3);
 //
     dec4.value_type = s21_NAN;
     dec3.value_type = s21_NORMAL_VALUE;
-    dec5 = s21_sub(dec3,dec4);
+    dec5 = s21_sub(dec3, dec4);
     ck_assert_int_eq(dec5.value_type, 3);
 //
     dec4.value_type = s21_NORMAL_VALUE;
     dec3.value_type = s21_NORMAL_VALUE;
-    dec5 = s21_sub(dec3,dec4);
+    dec5 = s21_sub(dec3, dec4);
     ck_assert_int_eq(dec5.value_type, 0);
-    
-    
-    
 } END_TEST
 /*-----------Mult-----------*/
 START_TEST(s21_decimal_test_mult) {
@@ -846,10 +843,7 @@ START_TEST(s21_decimal_test_mult5) {
     ck_assert_int_eq(res_od.bits[2], 0);
     ck_assert_int_eq(res_od.bits[1], 0);
     ck_assert_int_eq(res_od.bits[0], 0);
-    
-        
 } END_TEST
-
 
 START_TEST(s21_decimal_test_mult6) {
     float b = 0, c = 0.001999999862164;
@@ -867,7 +861,6 @@ START_TEST(s21_decimal_test_mult6) {
 
 START_TEST(s21_decimal_test_mult7) {
     float b = 0;
- 
     float a1 = 0.02454;
     float a2 = 10E26;
     s21_decimal decimal1, decimal2, decimal3;
@@ -1070,11 +1063,6 @@ START_TEST(s21_decimal_test_truncate1) {
         res_od = s21_truncate(src1);
         s21_from_decimal_to_float(res_od, &b);
         ck_assert_float_eq(b, originValues[i]);
-        
-//        s21_decimal dec3,dec4,dec5;
-//        init_decimal(dec3);
-//        init_decimal(dec4);
-//        dec3.value_type;
         }
 } END_TEST
 /*-----------Round-----------*/
@@ -1401,9 +1389,6 @@ int main() {
     tcase_add_test(s21_decimal_tests3, s21_decimal_test_mult6);
     tcase_add_test(s21_decimal_tests3, s21_decimal_test_mult7);
     tcase_add_test(s21_decimal_tests3, s21_decimal_test_nan);
-   
-
-
     Suite *s4 = suite_create("Another functions");
     TCase *s21_decimal_tests4 = tcase_create("Tests");
     suite_add_tcase(s4, s21_decimal_tests4);
