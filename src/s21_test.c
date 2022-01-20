@@ -105,7 +105,6 @@ START_TEST(s21_decimal_test_from_decimal_to_float) {
         s21_from_float_to_decimal(b, &src2);
         s21_decimal res_od = s21_add(src1, src2);
         s21_from_decimal_to_float(res_od, &res_our_dec);
-        printf("%f\n",res_our_dec);
         ck_assert_float_eq(res_our_dec, res_origin);
     }
 }
@@ -770,6 +769,42 @@ START_TEST(s21_decimal_test_mult5) {
 } END_TEST
 
 
+START_TEST(s21_decimal_test_mult6) {
+    float b = 0, c = 0.001999999862164;
+    float a1 = 2;
+    float a2 = 10E26;
+    s21_decimal decimal1, decimal2, decimal3;
+    init_decimal(&decimal3);
+    s21_from_float_to_decimal(a1, &decimal1);
+    s21_from_float_to_decimal(a2, &decimal2);
+    set_ten_power(30, &decimal2);
+    decimal3 = s21_mul(decimal2, decimal1);
+    s21_from_decimal_to_float(decimal3, &b);
+    ck_assert_float_eq(b, c);
+} END_TEST
+
+START_TEST(s21_decimal_test_mult7) {
+    float b = 0;
+ 
+    float a1 = 0.02454;
+    float a2 = 10E26;
+    s21_decimal decimal1, decimal2, decimal3;
+    init_decimal(&decimal3);
+    s21_from_float_to_decimal(a1, &decimal1);
+    s21_from_float_to_decimal(a2, &decimal2);
+    set_ten_power(30, &decimal2);
+    decimal3 = s21_mul(decimal2, decimal1);
+    s21_from_decimal_to_float(decimal3, &b);
+    ck_assert_float_eq(b, 2.45e-05);
+} END_TEST
+
+
+
+
+
+
+
+
 
 
 /*-----------Div-----------*/
@@ -1281,6 +1316,8 @@ int main() {
     tcase_add_test(s21_decimal_tests3, s21_decimal_test_add1);
     tcase_add_test(s21_decimal_tests3, s21_decimal_test_sub2);
     tcase_add_test(s21_decimal_tests3, s21_decimal_test_mult5);
+    tcase_add_test(s21_decimal_tests3, s21_decimal_test_mult6);
+    tcase_add_test(s21_decimal_tests3, s21_decimal_test_mult7);
 
 
     Suite *s4 = suite_create("Another functions");
