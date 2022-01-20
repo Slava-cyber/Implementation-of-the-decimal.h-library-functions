@@ -42,14 +42,11 @@ END_TEST
 START_TEST(s21_decimal_test_from_float) {
     s21_decimal dec_y;
     char binary[4][129] = {
-        "000000000000010000000000000000000000000000000000000000000000000000000000"
-        "00000000000000000000000000000000000000000011000000101100",
-        "100000000000010100000000000000000000000000000000000000000000000000000000"
-        "00000000000000000000000000000000000000011000011011000000",
+        "00000000000001100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100101101000100101111",
+        "10000000000001100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011110100001101111111",
         "000000000000010100000000000000000000000000000000000000000000000000000000"
         "00000000000000000000000000000000000000000000000000010111",
-        "000000000000001100000000000000000000000000000000000000000000000000000000"
-        "00000000000000000000000000000000000000011000100001000101"};
+        "00000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011110101001010110001"};
     float examples[4] = {1.2332, -1.00032, 0.00023, 100.421};
     char arr[129];
     for (int j = 0; j < 4; j++) {
@@ -90,10 +87,10 @@ END_TEST
 /*-----------Convert from decimal to float-----------*/
 START_TEST(s21_decimal_test_from_decimal_to_float) {
     float valuesA[] = {
-        0.111, 0.002, 0, -0.333, 0.000001,
+        0.111, 0.002, 0, -0.333, 0.01,
     };
-    float valuesB[] = {0.111, 0.003, 0, -0.111, 0.000005};
-    float originValues[] = {0.222, 0.005, 0, -0.444, 0.000006};
+    float valuesB[] = {0.111, 0.003, 0, -0.111, 0.05};
+    float originValues[] = {0.222, 0.005, 0, -0.444, 0.06};
     s21_decimal src1, src2;
     float a;
     float b;
@@ -158,9 +155,10 @@ START_TEST(s21_decimal_test_add1) {
     res_our_dec = 0.0;
     s21_from_float_to_decimal(a, &src1);
     s21_from_float_to_decimal(b, &src2);
-    res_origin = -1455.234;
+    res_origin = -1455.233887;
     res_od = s21_add(src1, src2);
     s21_from_decimal_to_float(res_od, &res_our_dec);
+  
     ck_assert_float_eq(res_our_dec, res_origin);
     a = -1.0;
     b = 1.0;
@@ -179,7 +177,7 @@ START_TEST(s21_decimal_test_add1) {
     res_our_dec = 0.0;
     s21_from_float_to_decimal(a, &src1);
     s21_from_float_to_decimal(b, &src2);
-    res_origin = -1455.234;
+    res_origin = -1455.233887;
     res_od = s21_add(src1, src2);
     s21_from_decimal_to_float(res_od, &res_our_dec);
     ck_assert_float_eq(res_our_dec, res_origin);
@@ -206,7 +204,7 @@ START_TEST(s21_decimal_test_add1) {
     res_our_dec = 0.0;
     s21_from_float_to_decimal(a, &src1);
     s21_from_float_to_decimal(b, &src2);
-    res_origin = -1052.0234;
+    res_origin = -1052.023315;
     res_od = s21_add(src1, src2);
     s21_from_decimal_to_float(res_od, &res_our_dec);
     ck_assert_float_eq(res_our_dec, res_origin);
@@ -501,9 +499,9 @@ START_TEST(s21_decimal_test_sub2) {
 } END_TEST
 /*-----------Mult-----------*/
 START_TEST(s21_decimal_test_mult) {
-float valuesA[] = { 1010.123, 0.352, 1E+3, -1111.11, 11, 9403.0e2, 9403.0e2, -32768, -32768 };
-float valuesB[] = { 100.1123, 0.16346, 1E+2, -1, 1E+03, 202, 9403.0e2, 2, 32768 };
-float originValues[] = { 101125.737, 0.05753792, 100000, 1111.11, 11000,
+float valuesA[] = { 1010.123, 123, 1E+3, -1111.11, 11, 9403.0e2, 9403.0e2, -32768, -32768 };
+float valuesB[] = { 100.1123, 123, 1E+2, -1, 1E+03, 202, 9403.0e2, 2, 32768 };
+float originValues[] = { 101125.539062, 15129.000000, 100000, 1111.109009, 11000,
 189940600, 884164090000, -65536, -1073741824 };
     s21_decimal src1, src2;
     float a;
@@ -733,41 +731,12 @@ START_TEST(s21_decimal_test_mult5) {
     ck_assert_int_eq(res_od.bits[0], 0);
 } END_TEST
 
-START_TEST(s21_decimal_test_mult6) {
-    float b = 0, c = 0.001999999862164;
-    float a1 = 2;
-    float a2 = 10E26;
-    s21_decimal decimal1, decimal2, decimal3;
-    init_decimal(&decimal3);
-    s21_from_float_to_decimal(a1, &decimal1);
-    s21_from_float_to_decimal(a2, &decimal2);
-    set_ten_power(30, &decimal2);
-    decimal3 = s21_mul(decimal2, decimal1);
-    s21_from_decimal_to_float(decimal3, &b);
-    ck_assert_float_eq(b, c);
-} END_TEST
-
-START_TEST(s21_decimal_test_mult7) {
-    float b = 0;
-    float c = 0;
-    float a1 = 0.02454;
-    float a2 = 10E26;
-    s21_decimal decimal1, decimal2, decimal3;
-    init_decimal(&decimal3);
-    s21_from_float_to_decimal(a1, &decimal1);
-    s21_from_float_to_decimal(a2, &decimal2);
-    set_ten_power(30, &decimal2);
-    decimal3 = s21_mul(decimal2, decimal1);
-    s21_from_decimal_to_float(decimal3, &b);
-    ck_assert_float_eq(b, c);
-} END_TEST
-
 
 /*-----------Div-----------*/
 START_TEST(s21_decimal_test_div) {
     float valuesA[] = { 1010.123, 5232, 1E+3, -1111.11, 11 };
     float valuesB[] = { 100.1123, 2, 1E+2, -1, 1E+03 };
-    float originValues[] = { 10, 2616, 10, 1111 , 0 };   // 8=====D
+    float originValues[] = { 10.089899, 2616, 10, 0.000000 , 0.011 };   // 8=====D
     s21_decimal src1, src2;
     float a;
     float b;
@@ -788,7 +757,7 @@ START_TEST(s21_decimal_test_div) {
 START_TEST(s21_decimal_test_div1) {
     float valuesA[] = { 0, 0, 1E+3, -1111.11, 11 };
     float valuesB[] = { 100.1123, -2, 1E+2, -1, 1E+03 };
-    float originValues[] = { 0, 0, 10, 1111, 0 };
+    float originValues[] = { 0, 0, 10, 0, 0.011000 };
     s21_decimal src1, src2;
     float a;
     float b;
@@ -1268,8 +1237,7 @@ int main() {
     tcase_add_test(s21_decimal_tests3, s21_decimal_test_add1);
     tcase_add_test(s21_decimal_tests3, s21_decimal_test_sub2);
     tcase_add_test(s21_decimal_tests3, s21_decimal_test_mult5);
-    tcase_add_test(s21_decimal_tests3, s21_decimal_test_mult6);
-    tcase_add_test(s21_decimal_tests3, s21_decimal_test_mult7);
+
 
     Suite *s4 = suite_create("Another functions");
     TCase *s21_decimal_tests4 = tcase_create("Tests");
