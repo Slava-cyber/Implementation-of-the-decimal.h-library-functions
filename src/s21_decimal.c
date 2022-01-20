@@ -524,16 +524,7 @@ int get_binary_power(value val) {
     result -= 127;
     return result;
 }
-// номер первой значащей цифры в decimal
-int first_number_position(s21_decimal decimal) {
-    int i;
-    for (i = 95; i >= 0; i--) {
-        if (check_bit(i, decimal)) {
-            break;
-        }
-    }
-    return i;
-}
+
 // сдвиг децимал основной части step > 0 - влево, step < 0 - вправо 
 int shift(s21_decimal *decimal, int step) {
     if (step > 0) {

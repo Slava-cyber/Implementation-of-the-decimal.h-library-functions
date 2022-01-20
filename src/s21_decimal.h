@@ -38,7 +38,6 @@ int form_float_decimal(s21_decimal *dst, int binaryPower, int tenPower, value va
 void check_value_number_float(float src, s21_decimal *decimal);
 int check_bit_number(unsigned int number, int position);
 int shift(s21_decimal *decimal, int step);
-int first_number_position(s21_decimal decimal);
 
     // операции над decimal s21_
 s21_decimal s21_add(s21_decimal decimalFirst, s21_decimal decimalSecond);

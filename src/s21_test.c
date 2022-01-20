@@ -760,16 +760,6 @@ START_TEST(s21_decimal_test_mult7) {
     decimal3 = s21_mul(decimal2, decimal1);
     s21_from_decimal_to_float(decimal3, &b);
     ck_assert_float_eq(b, c);
-
-
-    b  = 20E+10;
-    c = 30E+10;
-    float res = 24539998789160995867590656.000000;
-    s21_from_float_to_decimal(a1, &decimal1);
-    s21_from_float_to_decimal(a2, &decimal2);
-     decimal3 = s21_mul(decimal2, decimal1);
-      s21_from_decimal_to_float(decimal3, &b);
-       ck_assert_float_eq(b, res);
 } END_TEST
 
 
