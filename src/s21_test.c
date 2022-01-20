@@ -497,12 +497,47 @@ START_TEST(s21_decimal_test_sub2) {
     ck_assert_int_eq(result.bits[1], result_our.bits[1]);
     ck_assert_int_eq(result.bits[0], result_our.bits[0]);
     
+    float value;
+    s21_decimal dec3,dec4,dec5;
+    init_decimal(&dec3);
+    init_decimal(&dec4);
+    dec3.value_type = s21_NAN;
+    dec4.value_type = s21_NAN;
+    dec5 = s21_sub(dec3,dec4);
+  
+    s21_from_decimal_to_float(dec5,&value);
+    
+    if (dec5.value_type == 3) {
+    ck_assert_int_eq(dec5.value_type, 3);
+    }
+    
+    dec4.value_type = s21_NORMAL_VALUE;
+    dec3.value_type = s21_INFINITY;
+    dec5 = s21_sub(dec3,dec4);
+    ck_assert_int_eq(dec5.value_type, 1);
+
+    dec4.value_type = s21_NEGATIVE_INFINITY;
+    dec3.value_type = s21_INFINITY;
+    dec5 = s21_sub(dec3,dec4);
+    ck_assert_int_eq(dec5.value_type, 3);
+//
+    dec4.value_type = s21_NAN;
+    dec3.value_type = s21_NORMAL_VALUE;
+    dec5 = s21_sub(dec3,dec4);
+    ck_assert_int_eq(dec5.value_type, 3);
+//
+    dec4.value_type = s21_NORMAL_VALUE;
+    dec3.value_type = s21_NORMAL_VALUE;
+    dec5 = s21_sub(dec3,dec4);
+    ck_assert_int_eq(dec5.value_type, 0);
+    
+    
     
 } END_TEST
 /*-----------Mult-----------*/
 START_TEST(s21_decimal_test_mult) {
-float valuesA[] = { 1010.123, 123, 1E+3, -1111.11, 11, 9403.0e2, 9403.0e2, -32768, -32768,1E+15};
-float valuesB[] = { 100.1123, 123, 1E+2, -1, 1E+03, 202, 9403.0e2, 2, 32768, 10E+15};
+float valuesA[] = { 1010.123, 123, 1E+3, -1111.11, 11, 9403.0e2, 9403.0e2, -32768, -32768 };
+float valuesB[] = { 100.1123, 123, 1E+2, -1, 1E+03, 202, 9403.0e2, 2, 32768 };
 
     s21_decimal src1, src2;
     float a;
@@ -918,6 +953,11 @@ START_TEST(s21_decimal_test_truncate1) {
         res_od = s21_truncate(src1);
         s21_from_decimal_to_float(res_od, &b);
         ck_assert_float_eq(b, originValues[i]);
+        
+//        s21_decimal dec3,dec4,dec5;
+//        init_decimal(dec3);
+//        init_decimal(dec4);
+//        dec3.value_type;
         }
 } END_TEST
 /*-----------Round-----------*/
