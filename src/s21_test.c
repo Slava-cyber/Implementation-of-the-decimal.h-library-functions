@@ -317,6 +317,88 @@ START_TEST(s21_decimal_test_add1) {
     ck_assert_int_eq(result_origin.bits[0], result_our.bits[0]);
 }  END_TEST
 
+
+START_TEST(s21_decimal_test_nan) {
+  s21_decimal src1, src2, res;
+  src1.value_type = s21_NAN;
+  src1.bits[0] = 0b00000000000000000000000000000001;
+  src1.bits[1] = 0b00000000000000000000000000000000;
+  src1.bits[2] = 0b00000000000000000000000000000000;
+  src1.bits[3] = 0b00000000000000000000000000000000;
+  src2.value_type = s21_NORMAL_VALUE;
+  src2.bits[0] = 0b00000000000000000000000000000001;
+  src2.bits[1] = 0b00000000000000000000000000000000;
+  src2.bits[2] = 0b00000000000000000000000000000000;
+  src2.bits[3] = 0b00000000000000000000000000000000;
+  res = s21_sub(src1, src2);
+  ck_assert_int_eq(res.value_type, s21_NAN);
+  res = s21_div(src1, src2);
+  ck_assert_int_eq(res.value_type, s21_NAN);
+  src1.value_type = s21_INFINITY;
+  src2.value_type = s21_NEGATIVE_INFINITY;
+  res = s21_add(src1, src2);
+  ck_assert_int_eq(res.value_type, s21_NAN);
+  src1.value_type = s21_INFINITY;
+  res = s21_round(src1);
+  ck_assert_int_eq(res.value_type, s21_INFINITY);
+  res = s21_floor(src1);
+  ck_assert_int_eq(res.value_type, s21_INFINITY);
+  src1.value_type = s21_NAN;
+  res = s21_truncate(src1);
+  ck_assert_int_eq(res.value_type, s21_NAN);
+  res = s21_negate(src1);
+  ck_assert_int_eq(res.value_type, s21_NAN);
+  src1.value_type = s21_INFINITY;
+  res = s21_negate(src1);
+  ck_assert_int_eq(res.value_type, s21_NEGATIVE_INFINITY);
+  src1.value_type = s21_NEGATIVE_INFINITY;
+  res = s21_negate(src1);
+  ck_assert_int_eq(res.value_type, s21_INFINITY);
+  src1.value_type = s21_INFINITY;
+  src2.value_type = s21_INFINITY;
+  ck_assert_int_eq(s21_is_equal(src1, src2), 0);
+  src2.value_type = s21_NORMAL_VALUE;
+  src1.value_type = s21_NORMAL_VALUE;
+  src2.bits[3] = 0b10000000000000000000000000000000;
+  ck_assert_int_eq(s21_is_less(src1, src2), 1);
+  src2.bits[3] = 0b00000000000000000000000000000000;
+  src2.bits[3] = 0b10000000000000000000000000000000;
+  ck_assert_int_eq(s21_is_less(src1, src2), 1);
+  src1.value_type = s21_INFINITY;
+  ck_assert_int_eq(s21_is_less(src1, src2), 1);
+  src1.value_type = s21_NEGATIVE_INFINITY;
+  ck_assert_int_eq(s21_is_less(src1, src2), 0);
+  src2.value_type = s21_INFINITY;
+  ck_assert_int_eq(s21_is_less(src1, src2), 0);
+  src2.value_type = s21_NEGATIVE_INFINITY;
+  src1.value_type = s21_INFINITY;
+  ck_assert_int_eq(s21_is_less(src1, src2), 1);
+  src1.value_type = s21_NORMAL_VALUE;
+  ck_assert_int_eq(s21_is_less(src1, src2), 1);
+  src1.value_type = s21_NEGATIVE_INFINITY;
+  src2.value_type = s21_NEGATIVE_INFINITY;
+  ck_assert_int_eq(s21_is_less(src1, src2), 1);
+  src1.value_type = s21_NORMAL_VALUE;
+  src2.value_type = s21_INFINITY;
+  ck_assert_int_eq(s21_is_less(src1, src2), 0);
+  src2.value_type = s21_NAN;
+  ck_assert_int_eq(s21_is_less(src1, src2), 1);
+  src1.value_type = s21_NEGATIVE_INFINITY;
+  src2.value_type = s21_INFINITY;
+  res = s21_add(src1, src2);
+  ck_assert_int_eq(res.value_type, s21_NAN);
+  src1.value_type = s21_NORMAL_VALUE;
+  src2.value_type = s21_INFINITY;
+  res = s21_add(src1, src2);
+  ck_assert_int_eq(res.value_type, s21_INFINITY);
+  src2.value_type = s21_NEGATIVE_INFINITY;
+  res = s21_add(src1, src2);
+  ck_assert_int_eq(res.value_type, s21_NEGATIVE_INFINITY);
+}
+END_TEST
+
+
+
 /*-----------Sub-----------*/
 START_TEST(s21_decimal_test_sub) {
     int valuesA[] = {100, 100000, 1E+3, -111111, 1E+02};
@@ -1318,6 +1400,8 @@ int main() {
     tcase_add_test(s21_decimal_tests3, s21_decimal_test_mult5);
     tcase_add_test(s21_decimal_tests3, s21_decimal_test_mult6);
     tcase_add_test(s21_decimal_tests3, s21_decimal_test_mult7);
+    tcase_add_test(s21_decimal_tests3, s21_decimal_test_nan);
+   
 
 
     Suite *s4 = suite_create("Another functions");
